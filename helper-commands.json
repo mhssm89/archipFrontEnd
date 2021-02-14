@@ -1,0 +1,5 @@
+{
+  "createCognitoUser": "aws cognito-idp admin-create-user --user-pool-id <user_pool_id> --username <user_name> --user-attributes Name=<attr_name>,Value=<attr_value>",
+  "resetCognitoUserPassword": "aws cognito-idp admin-set-user-password --user-pool-id <user_pool_id> --username <user_name> --password <password> --permanent",
+  "updateCognitoUserAttributes": "aws cognito-idp admin-update-user-attributes --user-pool-id <user_pool_id> --username <user_name> --user-attributes Name=<attr_name>,Value=<attr_value>"
+}

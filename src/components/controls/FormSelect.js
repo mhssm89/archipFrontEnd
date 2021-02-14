@@ -1,0 +1,45 @@
+import React from 'react';
+
+import {
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@material-ui/core';
+
+import { useController, useFormContext } from 'react-hook-form';
+
+import { errorHandler } from './utils';
+
+// Validation Example
+// const validationSchema = yup.object().shape({
+//   sel: yup.string().required('Select field is required'),
+// });
+
+function FormSelect({ name, label = '', options, errorObj = {}, ...props }) {
+  const { control } = useFormContext();
+  const {
+    field: { ref, ...inputProps },
+  } = useController({
+    name,
+    control,
+  });
+  const { isError, errorMessage } = errorHandler(name, errorObj);
+
+  return (
+    <FormControl fullWidth error={isError}>
+      <InputLabel htmlFor={name}>{label}</InputLabel>
+      <Select id={name} {...inputProps} inputRef={ref} {...props}>
+        {options.map((item) => (
+          <MenuItem key={item.id} value={item.id}>
+            {item.label}
+          </MenuItem>
+        ))}
+      </Select>
+      {isError && <FormHelperText error>{errorMessage}</FormHelperText>}
+    </FormControl>
+  );
+}
+
+export default FormSelect;
