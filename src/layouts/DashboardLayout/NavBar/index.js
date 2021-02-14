@@ -417,7 +417,7 @@ const NavBar = ({ onMobileClose, openMobile }) => {
               variant="h5"
               color="textPrimary"
               underline="none">
-              {`${user?.attributes.given_name} ${user?.attributes.family_name}`}
+              {`${user?.name}`}
             </Link>
           </Box>
         </Box>

@@ -15,6 +15,7 @@ import {
   Typography,
 } from '@material-ui/core';
 
+import { gql, useMutation } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -25,7 +26,23 @@ import Page from 'src/components/common/Page';
 import FormInput from 'src/components/controls/FormInput';
 import useAuth from 'src/hooks/useAuth';
 
-import { withTranslation } from '@/root/i18n';
+const LOGIN = gql`
+  mutation Login($input: UsersPermissionsLoginInput!) {
+    login(input: $input) {
+      jwt
+      user {
+        id
+        name
+        username
+        email
+        role {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,13 +64,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const validationSchema = yup.object().shape({
-  username: yup.string().max(255).required('Username is required'),
-  password: yup.string().max(255).required('Password is required'),
+  email: yup.string().email().required('Required.'),
+  password: yup.string().max(255).required('Required.'),
 });
 
-function LoginPage({ t }) {
+function LoginPage() {
   const classes = useStyles();
-  const { isAuthenticated, login } = useAuth();
+  const [login, { loading }] = useMutation(LOGIN);
+  const { isAuthenticated, login: loginDispatch } = useAuth();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -65,17 +83,12 @@ function LoginPage({ t }) {
     mode: 'all',
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      username: '',
+      email: '',
       password: '',
       submitError: '',
     },
   });
-  const {
-    handleSubmit,
-    errors,
-    setError,
-    formState: { isSubmitting },
-  } = methods;
+  const { handleSubmit, errors, setError } = methods;
 
   return (
     <Page className={classes.root} title="Login">
@@ -108,10 +121,10 @@ function LoginPage({ t }) {
               {/* Login form here */}
               <FormProvider {...methods}>
                 <form>
-                  {/* username */}
+                  {/* Email */}
                   <FormInput
-                    name="username"
-                    label="Username"
+                    name="email"
+                    label="Email"
                     margin="normal"
                     variant="outlined"
                     errorObj={errors}
@@ -137,7 +150,7 @@ function LoginPage({ t }) {
 
                   <Box mt={4}>
                     {/* Submit */}
-                    {isSubmitting ? (
+                    {loading ? (
                       <Box display="flex" justifyContent="center" mt={4}>
                         <CircularProgress />
                       </Box>
@@ -149,8 +162,7 @@ function LoginPage({ t }) {
                         type="button"
                         variant="contained"
                         onClick={handleSubmit(onSubmit)}>
-                        {/* Log In */}
-                        {t('common:login')}
+                        Log In
                       </Button>
                     )}
                   </Box>
@@ -164,21 +176,23 @@ function LoginPage({ t }) {
   );
 
   // ##################################################
-  async function onSubmit({ username, password }) {
+  async function onSubmit({ email, password }) {
     try {
-      await login(username, password, () => router.push('/dashboard'));
-    } catch (err) {
-      console.error(err);
+      const { data } = await login({
+        variables: { input: { identifier: email, password } },
+      });
 
+      loginDispatch(data.login.jwt, data.login.user, () =>
+        router.push('/dashboard'),
+      );
+    } catch (err) {
       // Show submitError message
       setError('submitError', {
         type: 'submit',
-        message: `${err.message}`,
+        message: 'Invalid email or password.',
       });
     }
   }
 }
 
-LoginPage.getInitialProps = async () => ({ namespacesRequired: ['common'] });
-
-export default withTranslation('common')(LoginPage);
+export default LoginPage;

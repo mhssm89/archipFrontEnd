@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useReducer } from 'react';
 
-// import { Auth } from 'aws-amplify';
+import jwt_decode from 'jwt-decode';
+
 import SplashScreen from 'src/components/common/SplashScreen';
 
 const initialAuthState = {
@@ -52,12 +53,9 @@ const AuthContext = createContext({
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialAuthState);
 
-  const login = async (username, password, callback = () => {}) => {
-    // const user = await Auth.signIn(username, password);
-    const user = {
-      username: 'Hossam',
-      attributes: { given_name: 'Hossam', family_name: 'ELMansy' },
-    };
+  const login = async (auth_token, user, callback = () => {}) => {
+    localStorage.setItem('auth_token', auth_token);
+    localStorage.setItem('user', JSON.stringify(user));
 
     dispatch({
       type: 'LOGIN',
@@ -70,7 +68,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async (callback = () => {}) => {
-    // await Auth.signOut();
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user');
+
     dispatch({ type: 'LOGOUT' });
     callback();
   };
@@ -78,19 +78,26 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initialize = async () => {
       try {
-        // const user = await Auth.currentAuthenticatedUser();
-        const user = {
-          username: 'Hossam',
-          attributes: { given_name: 'Hossam', family_name: 'ELMansy' },
-        };
+        const auth_token = localStorage.getItem('auth_token');
+        const user = JSON.parse(localStorage.getItem('user'));
 
-        dispatch({
-          type: 'INITIALIZE',
-          payload: {
-            isAuthenticated: true,
-            user,
-          },
-        });
+        if (auth_token && user && jwt_decode(auth_token)) {
+          dispatch({
+            type: 'INITIALIZE',
+            payload: {
+              isAuthenticated: true,
+              user,
+            },
+          });
+        } else {
+          dispatch({
+            type: 'INITIALIZE',
+            payload: {
+              isAuthenticated: false,
+              user: null,
+            },
+          });
+        }
       } catch (err) {
         dispatch({
           type: 'INITIALIZE',

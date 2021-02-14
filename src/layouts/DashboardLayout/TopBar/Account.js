@@ -2,6 +2,8 @@ import React, { useRef, useState } from 'react';
 
 import { useRouter } from 'next/router';
 
+import { useApolloClient } from '@apollo/client';
+
 import {
   Avatar,
   Box,
@@ -31,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Account = () => {
   const classes = useStyles();
+  const client = useApolloClient();
   const router = useRouter();
   const ref = useRef(null);
   const { user, logout } = useAuth();
@@ -48,6 +51,7 @@ const Account = () => {
   const handleLogout = async () => {
     try {
       handleClose();
+      client.clearStore();
       await logout(() => router.push('/login'));
     } catch (err) {
       console.error('error signing out: ', err);
@@ -68,7 +72,7 @@ const Account = () => {
         <Avatar alt="User" className={classes.avatar} />
         <Hidden smDown>
           <Typography variant="h6" color="inherit">
-            {`${user?.attributes.given_name} ${user?.attributes.family_name}`}
+            {`${user?.name}`}
           </Typography>
         </Hidden>
       </Box>
@@ -83,9 +87,6 @@ const Account = () => {
         getContentAnchorEl={null}
         anchorEl={ref.current}
         open={isOpen}>
-        <MenuItem component={Link} href="/app/social/profile">
-          Profile
-        </MenuItem>
         <MenuItem component={Link} href="/account">
           Account
         </MenuItem>

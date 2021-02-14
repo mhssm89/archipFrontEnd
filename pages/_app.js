@@ -15,7 +15,6 @@ import App from 'next/app';
 import Head from 'next/head';
 import Router from 'next/router';
 
-// import Amplify from 'aws-amplify';
 import { jssPreset, StylesProvider, ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
@@ -24,20 +23,19 @@ import { create } from 'jss';
 import rtl from 'jss-rtl';
 import { SnackbarProvider } from 'notistack';
 
-// import config from 'src/aws-exports';
 import GlobalStyles from 'src/components/common/GlobalStyles';
 import LoadingScreen from 'src/components/common/LoadingScreen';
 import ScrollReset from 'src/components/common/ScrollReset';
 import { AuthProvider } from 'src/contexts/AuthContext';
 import { SettingsProvider } from 'src/contexts/SettingsContext';
 import useSettings from 'src/hooks/useSettings';
+import withApollo from 'src/lib/apollo';
 import { createTheme } from 'src/theme';
 
-import { appWithTranslation } from '@/root/i18n';
+// import { appWithTranslation } from '@/root/i18n';
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
-// Amplify.configure({ ...config });
 enableES5();
 
 function MyApp({ Component, pageProps }) {
@@ -110,7 +108,8 @@ MyApp.getInitialProps = async (appContext) => ({
   ...(await App.getInitialProps(appContext)),
 });
 
-export default withSettingsProvider(appWithTranslation(MyApp));
+// export default withSettingsProvider(appWithTranslation(MyApp));
+export default withApollo({ ssr: false })(withSettingsProvider(MyApp));
 
 function withSettingsProvider(Component) {
   // eslint-disable-next-line react/display-name
