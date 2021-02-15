@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { useRouter } from 'next/router';
-
 import {
   Box,
   Button,
@@ -15,7 +13,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 
-import { gql, useApolloClient, useMutation } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
@@ -30,15 +28,8 @@ const useStyles = makeStyles(() => ({
 }));
 
 const validationSchema = yup.object().shape({
-  password: yup
-    .string()
-    .min(7, 'Must be at least 7 characters')
-    .max(255)
-    .required('Required.'),
-  passwordConfirm: yup
-    .string()
-    .oneOf([yup.ref('password'), null], "Passwords don't match.")
-    .required('Required.'),
+  name: yup.string().max(200).required('Required'),
+  email: yup.string().email('Invalid email.').required('Required.'),
 });
 
 const UPDATE_USER = gql`
@@ -57,19 +48,18 @@ const UPDATE_USER = gql`
     }
   }
 `;
-function Security({ className, ...rest }) {
+
+function General({ className, ...rest }) {
   const classes = useStyles();
-  const { user, logout } = useAuth();
-  const router = useRouter();
-  const client = useApolloClient();
+  const { user, updateUser: updateUserDispatch } = useAuth();
   const [updateUser, { loading }] = useMutation(UPDATE_USER);
   const { enqueueSnackbar } = useSnackbar();
   const methods = useForm({
     mode: 'all',
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      password: '',
-      passwordConfirm: '',
+      name: user.name || '',
+      email: user.email || '',
       submitError: null,
     },
   });
@@ -85,26 +75,28 @@ function Security({ className, ...rest }) {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card className={clsx(classes.root, className)} {...rest}>
-          <CardHeader title="Change Password" />
+          <CardHeader title="Profile" />
           <Divider />
           <CardContent>
             <Grid container spacing={4}>
               <Grid item md={6} xs={12}>
                 <FormInput
-                  type="password"
-                  name="password"
-                  label="New Password"
+                  name="name"
+                  label="Name"
                   variant="outlined"
                   errorObj={errors}
+                  fullWidth
                 />
               </Grid>
               <Grid item md={6} xs={12}>
                 <FormInput
-                  type="password"
-                  name="passwordConfirm"
-                  label="New Password Confirmation"
+                  type="email"
+                  name="email"
+                  label="Email Address"
                   variant="outlined"
                   errorObj={errors}
+                  disabled
+                  fullWidth
                 />
               </Grid>
             </Grid>
@@ -124,7 +116,7 @@ function Security({ className, ...rest }) {
               <CircularProgress />
             ) : (
               <Button variant="contained" color="secondary" type="submit">
-                Change Password
+                Save Changes
               </Button>
             )}
           </Box>
@@ -134,7 +126,7 @@ function Security({ className, ...rest }) {
   );
 
   // ##################################################
-  async function onSubmit({ password }) {
+  async function onSubmit({ name }) {
     try {
       // Reset submitError message
       setValue('submitError', '');
@@ -146,30 +138,27 @@ function Security({ className, ...rest }) {
       }
 
       // Contruct input
-      const input = { where: { id: user.id }, data: { password } };
+      const input = { where: { id: user.id }, data: { name } };
 
       // Make an API request
-      await updateUser({ variables: { input } });
+      const { data } = await updateUser({ variables: { input } });
+
+      // Update state and localStorage
+      await updateUserDispatch(data.updateUser.user);
 
       // Show success message
-      enqueueSnackbar('Password changed successfully. Please login again.', {
-        variant: 'success',
-      });
-
-      // logout and login again
-      client.clearStore();
-      await logout(() => router.push('/login'));
+      enqueueSnackbar('User settings updated.', { variant: 'success' });
     } catch (err) {
       // Show error message
-      enqueueSnackbar('Error changing password.', { variant: 'error' });
+      enqueueSnackbar('Error updating user settings.', { variant: 'error' });
 
       // Show submitError message
       setError('submitError', {
         type: 'submit',
-        message: 'Error changing password.',
+        message: 'Error updating user settings.',
       });
     }
   }
 }
 
-export default Security;
+export default General;

@@ -9,13 +9,11 @@ import {
   Tabs,
 } from '@material-ui/core';
 
+import Header from 'src/components/common/Header';
 import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
 import General from 'src/components/pages/account/General';
-import Header from 'src/components/pages/account/Header';
-import Notifications from 'src/components/pages/account/Notifications';
 import Security from 'src/components/pages/account/Security';
-import Subscription from 'src/components/pages/account/Subscription';
 import DashboardLayout from 'src/layouts/DashboardLayout';
 
 const useStyles = makeStyles((theme) => ({
@@ -27,14 +25,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const headerLinks = [
+  { title: 'Dashboard', href: '/dashboard' },
+  { title: 'Account' },
+];
+
 function AccountPage() {
   const classes = useStyles();
   const [currentTab, setCurrentTab] = React.useState('general');
 
   const tabs = [
     { value: 'general', label: 'General' },
-    { value: 'subscription', label: 'Subscription' },
-    { value: 'notifications', label: 'Notifications' },
     { value: 'security', label: 'Security' },
   ];
 
@@ -45,7 +46,8 @@ function AccountPage() {
   return (
     <Page className={classes.root} title="Settings">
       <Container maxWidth="lg">
-        <Header />
+        <Header links={headerLinks} mainText="Settings" />
+
         <Box mt={3}>
           <Tabs
             onChange={handleTabsChange}
@@ -61,8 +63,6 @@ function AccountPage() {
         <Divider />
         <Box mt={3}>
           {currentTab === 'general' && <General />}
-          {currentTab === 'subscription' && <Subscription />}
-          {currentTab === 'notifications' && <Notifications />}
           {currentTab === 'security' && <Security />}
         </Box>
       </Container>

@@ -401,7 +401,7 @@ const NavBar = ({ onMobileClose, openMobile }) => {
         <Hidden lgUp>
           <Box p={2} display="flex" justifyContent="center">
             <Link href="/">
-              <Logo />
+              <Logo width={30} height={20} />
             </Link>
           </Box>
         </Hidden>

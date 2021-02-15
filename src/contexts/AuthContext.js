@@ -38,6 +38,12 @@ const reducer = (state, action) => {
         user: null,
       };
     }
+    case 'UPDATE_USER': {
+      return {
+        ...state,
+        user: action.payload,
+      };
+    }
     default: {
       return { ...state };
     }
@@ -73,6 +79,12 @@ export const AuthProvider = ({ children }) => {
 
     dispatch({ type: 'LOGOUT' });
     callback();
+  };
+
+  const updateUser = async (user) => {
+    localStorage.setItem('user', JSON.stringify(user));
+
+    dispatch({ type: 'UPDATE_USER', payload: user });
   };
 
   useEffect(() => {
@@ -122,6 +134,7 @@ export const AuthProvider = ({ children }) => {
         ...state,
         login,
         logout,
+        updateUser,
       }}>
       {children}
     </AuthContext.Provider>
