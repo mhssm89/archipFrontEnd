@@ -55,7 +55,11 @@ function TopBar({ className, onMobileNavOpen, ...rest }) {
         </Hidden>
         <Hidden mdDown>
           <Link href="/">
-            <Logo />
+            <Logo
+              style={{ borderRadius: 4, backgroundColor: 'white' }}
+              width={140}
+              height={45}
+            />
           </Link>
         </Hidden>
         <Box ml={2} flexGrow={1} />

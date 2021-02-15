@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const validationSchema = yup.object().shape({
-  email: yup.string().email().required('Required.'),
+  email: yup.string().email('Invalid email.').required('Required.'),
   password: yup.string().max(255).required('Required.'),
 });
 
@@ -96,7 +96,7 @@ function LoginPage() {
         {/* Logo */}
         <Box mb={8} display="flex" justifyContent="center">
           <Link href="/">
-            <Logo />
+            <Logo width={250} height={80} />
           </Link>
         </Box>
 
