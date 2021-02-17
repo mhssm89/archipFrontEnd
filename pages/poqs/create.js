@@ -5,7 +5,7 @@ import { Box, Container, makeStyles } from '@material-ui/core';
 import Header from 'src/components/common/Header';
 import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
-import Form from 'src/components/pages/products/create/Form';
+import Form from 'src/components/pages/poqs/create/Form';
 import DashboardLayout from 'src/layouts/DashboardLayout';
 
 const useStyles = makeStyles((theme) => ({
@@ -20,28 +20,27 @@ const useStyles = makeStyles((theme) => ({
 const headerLinks = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Management', href: '#' },
-  { title: 'Products', href: '/products' },
+  { title: 'POQs', href: '/poqs' },
   { title: 'Create' },
 ];
 
-function ProductCreatePage() {
+function POQCreatePage() {
   const classes = useStyles();
-  return (
-    <Page className={classes.root} title="Products - Create">
-      <Container maxWidth={false}>
-        <Header links={headerLinks} mainText="Create Product" />
-      </Container>
 
-      <Box mt={3}>
-        <Container maxWidth="lg">
+  return (
+    <Page className={classes.root} title="POQs - Create">
+      <Container maxWidth={false}>
+        <Header links={headerLinks} mainText="Create POQ" />
+
+        <Box mt={3}>
           <Form />
-        </Container>
-      </Box>
+        </Box>
+      </Container>
     </Page>
   );
 }
 
-ProductCreatePage.Guard = Protected;
-ProductCreatePage.Layout = DashboardLayout;
+POQCreatePage.Guard = Protected;
+POQCreatePage.Layout = DashboardLayout;
 
-export default ProductCreatePage;
+export default POQCreatePage;

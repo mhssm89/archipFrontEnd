@@ -101,6 +101,21 @@ const sections = [
     subheader: 'Management',
     items: [
       {
+        title: 'POQs',
+        icon: ReceiptIcon,
+        href: '/poqs',
+        items: [
+          {
+            title: 'List POQs',
+            href: '/poqs',
+          },
+          {
+            title: 'Create POQ',
+            href: '/poqs/create',
+          },
+        ],
+      },
+      {
         title: 'Customers',
         icon: UsersIcon,
         href: '/customers',
@@ -110,12 +125,8 @@ const sections = [
             href: '/customers',
           },
           {
-            title: 'View Customer',
-            href: '/customers/1',
-          },
-          {
-            title: 'Edit Customer',
-            href: '/customers/1/edit',
+            title: 'Create Customer',
+            href: '/customers/create',
           },
         ],
       },

@@ -64,11 +64,10 @@ function Results({ className, query, ...rest }) {
   const items = [
     {
       id: 1,
-      firstName: 'Mohamed',
-      lastName: 'Hossam',
-      company: 'Freelance',
-      phoneNumber: '0123456789',
-      email: 'mohamed@example.com',
+      number: '12345',
+      customerName: 'Mohamed Hossam',
+      expiresOn: '01-01-2021',
+      totalCost: 10000,
     },
   ];
 
@@ -88,7 +87,7 @@ function Results({ className, query, ...rest }) {
             }}
             style={{ width: '25%' }}
             onChange={() => {}}
-            placeholder="Search Customers"
+            placeholder="Search POQs"
             value=""
             variant="outlined"
           />
@@ -106,10 +105,10 @@ function Results({ className, query, ...rest }) {
                       onChange={handleSelectAllItems}
                     />
                   </TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Company</TableCell>
-                  <TableCell>Phone Number</TableCell>
-                  <TableCell>Email</TableCell>
+                  <TableCell>Number #</TableCell>
+                  <TableCell>Customer</TableCell>
+                  <TableCell>Expires On</TableCell>
+                  <TableCell>Total Cost</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -136,21 +135,21 @@ function Results({ className, query, ...rest }) {
                             value={isItemSelected}
                           />
                         </TableCell>
-                        <TableCell>{`${item.firstName} ${item.lastName}`}</TableCell>
-                        <TableCell>{item.company}</TableCell>
-                        <TableCell>{item.phoneNumber}</TableCell>
-                        <TableCell>{item.email}</TableCell>
+                        <TableCell>{item.number}</TableCell>
+                        <TableCell>{item.customerName}</TableCell>
+                        <TableCell>{item.expiresOn}</TableCell>
+                        <TableCell>{item.totalCost}</TableCell>
                         <TableCell align="right">
                           <IconButton
                             component={Link}
-                            href={`/customers/${item.id}/edit`}>
+                            href={`/poqs/${item.id}/edit`}>
                             <SvgIcon fontSize="small">
                               <EditIcon />
                             </SvgIcon>
                           </IconButton>
                           <IconButton
                             component={Link}
-                            href={`/customers/${item.id}`}>
+                            href={`/poqs/${item.id}`}>
                             <SvgIcon fontSize="small">
                               <ArrowRightIcon />
                             </SvgIcon>

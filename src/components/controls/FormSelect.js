@@ -28,7 +28,7 @@ function FormSelect({ name, label = '', options, errorObj = {}, ...props }) {
   const { isError, errorMessage } = errorHandler(name, errorObj);
 
   return (
-    <FormControl fullWidth error={isError}>
+    <FormControl fullWidth error={isError} {...props}>
       <InputLabel htmlFor={name}>{label}</InputLabel>
       <Select id={name} {...inputProps} inputRef={ref} {...props}>
         {options.map((item) => (

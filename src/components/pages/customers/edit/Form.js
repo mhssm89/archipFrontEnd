@@ -17,42 +17,40 @@ import { useSnackbar } from 'notistack';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
-import FormDatePicker from 'src/components/controls/FormDatePicker';
 import FormInput from 'src/components/controls/FormInput';
-import FormSelect from 'src/components/controls/FormSelect';
-import FormSlider from 'src/components/controls/FormSlider';
 
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
 const validationSchema = yup.object().shape({
-  partNo: yup.string().max(255).required('Required.'),
-  brand: yup.string().max(255).required('Required.'),
-  name: yup.string().max(255).required('Required.'),
-  description: yup.string().max(255).required('Required.'),
-  price: yup.number().required('Required.'),
-  discount: yup.number().min(0).max(100).required('Required.'),
+  firstName: yup.string().max(255).required('Required.'),
+  lastName: yup.string().max(255).required('Required.'),
+  company: yup.string().max(255).required('Required.'),
+  position: yup.string().max(255).required('Required.'),
+  email: yup.string().email('Invalid email.').max(255).required('Required.'),
+  mobilePhone: yup.string().min(11).max(11).required('Required.'),
+  businessPhone1: yup.string().min(11).max(11).required('Required.'),
+  businessPhone2: yup.string().min(11).max(11).required('Required.'),
+  address: yup.string().max(255).required('Required.'),
 });
 
-const BRAND_OPTIONS = [
-  { id: 1, label: 'Brand 1' },
-  { id: 2, label: 'Brand 2' },
-];
-
-function Form({ className, ...rest }) {
+function Form({ className, customer, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const methods = useForm({
     mode: 'all',
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      partNo: '',
-      brand: '',
-      name: '',
-      description: '',
-      price: '',
-      discount: 0,
+      firstName: customer.firstName || '',
+      lastName: customer.lastName || '',
+      company: customer.company || '',
+      position: customer.position || '',
+      email: customer.email || '',
+      mobilePhone: customer.mobilePhone || '',
+      businessPhone1: customer.businessPhone1 || '',
+      businessPhone2: customer.businessPhone2 || '',
+      address: customer.address || '',
       submitError: '',
     },
   });
@@ -61,9 +59,7 @@ function Form({ className, ...rest }) {
     errors,
     setError,
     setValue,
-    reset,
-    watch,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isDirty, dirtyFields },
   } = methods;
 
   return (
@@ -77,54 +73,72 @@ function Form({ className, ...rest }) {
             <Grid container spacing={3}>
               <Grid item md={6} xs={12}>
                 <FormInput
-                  name="partNo"
-                  label="Part #"
+                  name="firstName"
+                  label="First Name"
                   variant="outlined"
                   errorObj={errors}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
-                <FormSelect
-                  name="brand"
-                  label="Brand"
-                  options={BRAND_OPTIONS}
+                <FormInput
+                  name="lastName"
+                  label="Last Name"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormInput
+                  name="company"
+                  label="Company Name"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormInput
+                  name="position"
+                  label="Position"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormInput
+                  name="email"
+                  label="Email Address"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormInput
+                  name="mobilePhone"
+                  label="Phone Number"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormInput
+                  name="businessPhone1"
+                  label="Business Phone Number 1"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormInput
+                  name="businessPhone2"
+                  label="Business Phone Number 2"
                   variant="outlined"
                   errorObj={errors}
                 />
               </Grid>
               <Grid item md={12} xs={12}>
                 <FormInput
-                  name="name"
-                  label="Name"
-                  variant="outlined"
-                  errorObj={errors}
-                />
-              </Grid>
-              <Grid item md={12} xs={12}>
-                <FormInput
-                  name="description"
-                  label="Description"
-                  variant="outlined"
-                  multiline
-                  rows={3}
-                  errorObj={errors}
-                />
-              </Grid>
-              <Grid item md={6} xs={12}>
-                <FormInput
-                  name="price"
-                  label="Price (L.E)"
-                  type="number"
-                  variant="outlined"
-                  errorObj={errors}
-                />
-              </Grid>
-              <Grid item md={6} xs={12}>
-                <FormSlider
-                  name="discount"
-                  label={`Discount (${watch('discount')}%)`}
-                  min={0}
-                  max={100}
+                  name="address"
+                  label="Address"
                   variant="outlined"
                   errorObj={errors}
                 />
@@ -150,7 +164,7 @@ function Form({ className, ...rest }) {
                   color="secondary"
                   type="submit"
                   disabled={isSubmitting}>
-                  Create
+                  Save
                 </Button>
               )}
             </Box>
@@ -161,10 +175,16 @@ function Form({ className, ...rest }) {
   );
 
   // ##################################################
-  async function onSubmit({ partNo }) {
+  async function onSubmit({ firstName, lastName }) {
     try {
       // Reset submitError message
       setValue('submitError', '');
+
+      // Return if no data changed
+      if (!isDirty) {
+        enqueueSnackbar('No data changes.', { variant: 'info' });
+        return;
+      }
 
       // Contsruct input
       // const input = {
@@ -173,24 +193,17 @@ function Form({ className, ...rest }) {
       // };
 
       // Make an API request
-      // await API.graphql({
-      //   query: createProductClass,
-      //   variables: { input },
-      // });
-
-      // Reset form
-      reset();
 
       // Show success message
-      enqueueSnackbar('Product created successfully.', { variant: 'success' });
+      enqueueSnackbar('Customer updated successfully.', { variant: 'success' });
     } catch (err) {
       // Show error message
-      enqueueSnackbar('Error creating new product.', { variant: 'error' });
+      enqueueSnackbar('Error updating customer.', { variant: 'error' });
 
       // Show submitError message
       setError('submitError', {
         type: 'submit',
-        message: 'Error creating new product.',
+        message: 'Error updating customer.',
       });
     }
   }

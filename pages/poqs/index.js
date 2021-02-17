@@ -9,7 +9,7 @@ import { PlusCircle as PlusCircleIcon } from 'react-feather';
 import Header from 'src/components/common/Header';
 import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
-import Results from 'src/components/pages/customers/Results';
+import Results from 'src/components/pages/poqs/Results';
 import useIsMountedRef from 'src/hooks/useIsMountedRef';
 import DashboardLayout from 'src/layouts/DashboardLayout';
 
@@ -25,23 +25,23 @@ const useStyles = makeStyles((theme) => ({
 const headerLinks = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Management', href: '#' },
-  { title: 'Customers' },
+  { title: 'POQs' },
 ];
 
-const CUSTOMERS = [];
+const POQs = [];
 
-function CustomersPage() {
+function POQsPage() {
   const classes = useStyles();
   const router = useRouter();
   const isMountedRef = useIsMountedRef();
-  const [customers, setCustomers] = React.useState([]);
+  const [poqs, setPoqs] = React.useState([]);
 
-  const getCustomers = React.useCallback(async () => {
+  const getPoqs = React.useCallback(async () => {
     try {
-      const data = { customers: CUSTOMERS };
+      const data = { poqs: POQs };
 
       if (isMountedRef.current) {
-        setCustomers(data.customers);
+        setPoqs(data.poqs);
       }
     } catch (err) {
       console.error(err);
@@ -49,27 +49,27 @@ function CustomersPage() {
   }, [isMountedRef]);
 
   React.useEffect(() => {
-    getCustomers();
-  }, [getCustomers]);
+    getPoqs();
+  }, [getPoqs]);
 
   return (
-    <Page className={classes.root} title="Customers - All">
+    <Page className={classes.root} title="POQs - All">
       <Container maxWidth={false}>
         <Header
           links={headerLinks}
-          mainText="All Customers"
+          mainText="All POQs"
           rightComponent={
             <Button
               color="secondary"
               variant="contained"
-              onClick={() => router.push('/customers/create')}
+              onClick={() => router.push('/poqs/create')}
               className={classes.action}
               startIcon={
                 <SvgIcon fontSize="small">
                   <PlusCircleIcon />
                 </SvgIcon>
               }>
-              New Customer
+              New POQ
             </Button>
           }
         />
@@ -82,7 +82,7 @@ function CustomersPage() {
   );
 }
 
-CustomersPage.Guard = Protected;
-CustomersPage.Layout = DashboardLayout;
+POQsPage.Guard = Protected;
+POQsPage.Layout = DashboardLayout;
 
-export default CustomersPage;
+export default POQsPage;

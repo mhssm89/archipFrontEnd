@@ -22,14 +22,9 @@ import {
 
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
-import {
-  ArrowRight as ArrowRightIcon,
-  Edit as EditIcon,
-  Search as SearchIcon,
-} from 'react-feather';
+import { Search as SearchIcon, Trash as TrashIcon } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
-import Link from 'src/components/common/Link';
 import useTable from 'src/hooks/useTable';
 
 import BulkOperations from './BulkOperations';
@@ -64,36 +59,16 @@ function Results({ className, query, ...rest }) {
   const items = [
     {
       id: 1,
-      firstName: 'Mohamed',
-      lastName: 'Hossam',
-      company: 'Freelance',
-      phoneNumber: '0123456789',
-      email: 'mohamed@example.com',
+      partNo: '123456',
+      quantity: 15,
+      price: '100',
+      discount: '5',
     },
   ];
 
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
-        <Box p={2}>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SvgIcon fontSize="small" color="action">
-                    <SearchIcon />
-                  </SvgIcon>
-                </InputAdornment>
-              ),
-            }}
-            style={{ width: '25%' }}
-            onChange={() => {}}
-            placeholder="Search Customers"
-            value=""
-            variant="outlined"
-          />
-        </Box>
-        <Divider />
         <PerfectScrollbar>
           <Box minWidth={700}>
             <Table>
@@ -106,10 +81,10 @@ function Results({ className, query, ...rest }) {
                       onChange={handleSelectAllItems}
                     />
                   </TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Company</TableCell>
-                  <TableCell>Phone Number</TableCell>
-                  <TableCell>Email</TableCell>
+                  <TableCell>Part #</TableCell>
+                  <TableCell>Quantity</TableCell>
+                  <TableCell>Price (L.E)</TableCell>
+                  <TableCell>Discount (%)</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -136,23 +111,14 @@ function Results({ className, query, ...rest }) {
                             value={isItemSelected}
                           />
                         </TableCell>
-                        <TableCell>{`${item.firstName} ${item.lastName}`}</TableCell>
-                        <TableCell>{item.company}</TableCell>
-                        <TableCell>{item.phoneNumber}</TableCell>
-                        <TableCell>{item.email}</TableCell>
+                        <TableCell>{item.partNo}</TableCell>
+                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell>{item.price}</TableCell>
+                        <TableCell>{item.discount}</TableCell>
                         <TableCell align="right">
-                          <IconButton
-                            component={Link}
-                            href={`/customers/${item.id}/edit`}>
+                          <IconButton onClick={() => {}}>
                             <SvgIcon fontSize="small">
-                              <EditIcon />
-                            </SvgIcon>
-                          </IconButton>
-                          <IconButton
-                            component={Link}
-                            href={`/customers/${item.id}`}>
-                            <SvgIcon fontSize="small">
-                              <ArrowRightIcon />
+                              <TrashIcon />
                             </SvgIcon>
                           </IconButton>
                         </TableCell>

@@ -5,7 +5,7 @@ import { Box, Container, makeStyles } from '@material-ui/core';
 import Header from 'src/components/common/Header';
 import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
-import Form from 'src/components/pages/products/create/Form';
+import Form from 'src/components/pages/customers/create/Form';
 import DashboardLayout from 'src/layouts/DashboardLayout';
 
 const useStyles = makeStyles((theme) => ({
@@ -20,16 +20,16 @@ const useStyles = makeStyles((theme) => ({
 const headerLinks = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Management', href: '#' },
-  { title: 'Products', href: '/products' },
+  { title: 'Customers', href: '/customers' },
   { title: 'Create' },
 ];
 
-function ProductCreatePage() {
+function CustomerCreatePage() {
   const classes = useStyles();
   return (
-    <Page className={classes.root} title="Products - Create">
+    <Page className={classes.root} title="Customers - Create">
       <Container maxWidth={false}>
-        <Header links={headerLinks} mainText="Create Product" />
+        <Header links={headerLinks} mainText="Create Customer" />
       </Container>
 
       <Box mt={3}>
@@ -41,7 +41,7 @@ function ProductCreatePage() {
   );
 }
 
-ProductCreatePage.Guard = Protected;
-ProductCreatePage.Layout = DashboardLayout;
+CustomerCreatePage.Guard = Protected;
+CustomerCreatePage.Layout = DashboardLayout;
 
-export default ProductCreatePage;
+export default CustomerCreatePage;

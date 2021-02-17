@@ -40,19 +40,19 @@ const BRAND_OPTIONS = [
   { id: 2, label: 'Brand 2' },
 ];
 
-function Form({ className, ...rest }) {
+function Form({ className, product, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const methods = useForm({
     mode: 'all',
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      partNo: '',
-      brand: '',
-      name: '',
-      description: '',
-      price: '',
-      discount: 0,
+      partNo: product.partNo || '',
+      brand: product.brand || '',
+      name: product.name || '',
+      description: product.description || '',
+      price: product.price || '',
+      discount: product.discount || 0,
       submitError: '',
     },
   });
@@ -63,7 +63,7 @@ function Form({ className, ...rest }) {
     setValue,
     reset,
     watch,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isDirty, dirtyFields },
   } = methods;
 
   return (
@@ -150,7 +150,7 @@ function Form({ className, ...rest }) {
                   color="secondary"
                   type="submit"
                   disabled={isSubmitting}>
-                  Create
+                  Save
                 </Button>
               )}
             </Box>
@@ -166,6 +166,12 @@ function Form({ className, ...rest }) {
       // Reset submitError message
       setValue('submitError', '');
 
+      // Return if no data changed
+      if (!isDirty) {
+        enqueueSnackbar('No data changes.', { variant: 'info' });
+        return;
+      }
+
       // Contsruct input
       // const input = {
       //   name,
@@ -173,24 +179,17 @@ function Form({ className, ...rest }) {
       // };
 
       // Make an API request
-      // await API.graphql({
-      //   query: createProductClass,
-      //   variables: { input },
-      // });
-
-      // Reset form
-      reset();
 
       // Show success message
-      enqueueSnackbar('Product created successfully.', { variant: 'success' });
+      enqueueSnackbar('Product updated successfully.', { variant: 'success' });
     } catch (err) {
       // Show error message
-      enqueueSnackbar('Error creating new product.', { variant: 'error' });
+      enqueueSnackbar('Error updating product.', { variant: 'error' });
 
       // Show submitError message
       setError('submitError', {
         type: 'submit',
-        message: 'Error creating new product.',
+        message: 'Error updating product.',
       });
     }
   }

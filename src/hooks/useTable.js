@@ -3,7 +3,7 @@ import React from 'react';
 // import { API } from 'aws-amplify';
 import { useSnackbar } from 'notistack';
 
-function useTable({ query, queryName }) {
+function useTable({ query }) {
   const [items, setItems] = React.useState([]);
   const [selectedItems, setSelectedItems] = React.useState([]);
   const [page, setPage] = React.useState(0);
