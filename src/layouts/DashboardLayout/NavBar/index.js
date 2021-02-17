@@ -37,6 +37,8 @@ import {
   User as UserIcon,
   UserPlus as UserPlusIcon,
   Users as UsersIcon,
+  List as listIcon,
+  PlusCircle as addprojectIcon,
 } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
@@ -144,6 +146,22 @@ const sections = [
             href: '/products/create',
           },
         ],
+      },{
+        title: 'Projects',
+        icon: BriefcaseIcon,
+        items:[
+          {
+            title: "List Projects",
+            icon: listIcon,
+            href:'/projects'
+
+          },
+          {
+            title:'Create Project',
+            icon: addprojectIcon,
+            href: '/projects/create'
+          }
+        ]
       },
       {
         title: 'Orders',
@@ -160,6 +178,7 @@ const sections = [
           },
         ],
       },
+      
       {
         title: 'Invoices',
         icon: ReceiptIcon,
