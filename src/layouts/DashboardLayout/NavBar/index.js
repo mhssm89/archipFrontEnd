@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import React, { useEffect } from 'react';
 
 import { useRouter } from 'next/router';
@@ -27,18 +26,18 @@ import {
   Edit as EditIcon,
   Folder as FolderIcon,
   Layout as LayoutIcon,
+  List as listIcon,
   Lock as LockIcon,
   Mail as MailIcon,
   MessageCircle as MessageCircleIcon,
   PieChart as PieChartIcon,
+  PlusCircle as addprojectIcon,
   Share2 as ShareIcon,
   ShoppingCart as ShoppingCartIcon,
   Trello as TrelloIcon,
   User as UserIcon,
   UserPlus as UserPlusIcon,
   Users as UsersIcon,
-  List as listIcon,
-  PlusCircle as addprojectIcon,
 } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
@@ -57,51 +56,27 @@ const sections = [
         icon: PieChartIcon,
         href: '/dashboard',
       },
-      {
-        title: 'Dashboard Alternative',
-        icon: BarChartIcon,
-        href: '/dashboard-alternative',
-      },
     ],
   },
-  // {
-  //   subheader: 'Basic Data',
-  //   items: [
-  //     {
-  //       title: "Product's Kinds",
-  //       icon: ShoppingCartIcon,
-  //       href: '/product-kinds',
-  //       items: [
-  //         {
-  //           title: 'List Kinds',
-  //           href: '/product-kinds',
-  //         },
-  //         {
-  //           title: 'Create Kind',
-  //           href: '/product-kinds/create',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: "Product's Classes",
-  //       icon: ShoppingCartIcon,
-  //       href: '/product-classes',
-  //       items: [
-  //         {
-  //           title: 'List Classes',
-  //           href: '/product-classes',
-  //         },
-  //         {
-  //           title: 'Create Class',
-  //           href: '/product-classes/create',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
   {
     subheader: 'Management',
     items: [
+      {
+        title: 'Projects',
+        icon: BriefcaseIcon,
+        items: [
+          {
+            title: 'List Projects',
+            icon: listIcon,
+            href: '/projects',
+          },
+          {
+            title: 'Create Project',
+            icon: addprojectIcon,
+            href: '/projects/create',
+          },
+        ],
+      },
       {
         title: 'POQs',
         icon: ReceiptIcon,
@@ -146,204 +121,187 @@ const sections = [
             href: '/products/create',
           },
         ],
-      },{
-        title: 'Projects',
-        icon: BriefcaseIcon,
-        items:[
-          {
-            title: "List Projects",
-            icon: listIcon,
-            href:'/projects'
-
-          },
-          {
-            title:'Create Project',
-            icon: addprojectIcon,
-            href: '/projects/create'
-          }
-        ]
       },
-      {
-        title: 'Orders',
-        icon: FolderIcon,
-        href: '/orders',
-        items: [
-          {
-            title: 'List Orders',
-            href: '/orders',
-          },
-          {
-            title: 'View Order',
-            href: '/orders/1',
-          },
-        ],
-      },
-      
-      {
-        title: 'Invoices',
-        icon: ReceiptIcon,
-        href: '/invoices',
-        items: [
-          {
-            title: 'List Invoices',
-            href: '/invoices',
-          },
-          {
-            title: 'View Invoice',
-            href: '/invoices/1',
-          },
-        ],
-      },
+      // {
+      //   title: 'Orders',
+      //   icon: FolderIcon,
+      //   href: '/orders',
+      //   items: [
+      //     {
+      //       title: 'List Orders',
+      //       href: '/orders',
+      //     },
+      //     {
+      //       title: 'View Order',
+      //       href: '/orders/1',
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: 'Invoices',
+      //   icon: ReceiptIcon,
+      //   href: '/invoices',
+      //   items: [
+      //     {
+      //       title: 'List Invoices',
+      //       href: '/invoices',
+      //     },
+      //     {
+      //       title: 'View Invoice',
+      //       href: '/invoices/1',
+      //     },
+      //   ],
+      // },
     ],
   },
-  {
-    subheader: 'Applications',
-    items: [
-      {
-        title: 'Projects Platform',
-        href: '/projects',
-        icon: BriefcaseIcon,
-        items: [
-          {
-            title: 'Overview',
-            href: '/projects/overview',
-          },
-          {
-            title: 'Browse Projects',
-            href: '/projects/browse',
-          },
-          {
-            title: 'Create Project',
-            href: '/projects/create',
-          },
-          {
-            title: 'View Project',
-            href: '/projects/1',
-          },
-        ],
-      },
-      {
-        title: 'Social Platform',
-        href: '/social',
-        icon: ShareIcon,
-        items: [
-          {
-            title: 'Profile',
-            href: '/social/profile',
-          },
-          {
-            title: 'Feed',
-            href: '/social/feed',
-          },
-        ],
-      },
-      {
-        title: 'Kanban',
-        href: '/kanban',
-        icon: TrelloIcon,
-      },
-      {
-        title: 'Mail',
-        href: '/mail',
-        icon: MailIcon,
-      },
-      {
-        title: 'Chat',
-        href: '/chat',
-        icon: MessageCircleIcon,
-        // eslint-disable-next-line react/display-name
-        info: () => <Chip color="secondary" size="small" label="Updated" />,
-      },
-      {
-        title: 'Calendar',
-        href: '/calendar',
-        icon: CalendarIcon,
-        // eslint-disable-next-line react/display-name
-        info: () => <Chip color="secondary" size="small" label="Updated" />,
-      },
-    ],
-  },
-  {
-    subheader: 'Auth',
-    items: [
-      {
-        title: 'Login',
-        href: '/login-unprotected',
-        icon: LockIcon,
-      },
-      {
-        title: 'Register',
-        href: '/register-unprotected',
-        icon: UserPlusIcon,
-      },
-    ],
-  },
-  {
-    subheader: 'Pages',
-    items: [
-      {
-        title: 'Account',
-        href: '/account',
-        icon: UserIcon,
-      },
-      {
-        title: 'Error',
-        href: '/404',
-        icon: AlertCircleIcon,
-      },
-      {
-        title: 'Pricing',
-        href: '/pricing',
-        icon: DollarSignIcon,
-      },
-    ],
-  },
-  {
-    subheader: 'Extra',
-    items: [
-      {
-        title: 'Charts',
-        href: '/extra/charts',
-        icon: BarChartIcon,
-        items: [
-          {
-            title: 'Apex Charts',
-            href: '/extra/charts/apex',
-          },
-        ],
-      },
-      {
-        title: 'Forms',
-        href: '/extra/forms',
-        icon: EditIcon,
-        items: [
-          {
-            title: 'Formik',
-            href: '/extra/forms/formik',
-          },
-          {
-            title: 'Redux Forms',
-            href: '/extra/forms/redux',
-          },
-        ],
-      },
-      {
-        title: 'Editors',
-        href: '/extra/editors',
-        icon: LayoutIcon,
-        items: [
-          {
-            title: 'DraftJS Editor',
-            href: '/extra/editors/draft-js',
-          },
-          {
-            title: 'Quill Editor',
-            href: '/extra/editors/quill',
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   subheader: 'Applications',
+  //   items: [
+  //     {
+  //       title: 'Projects Platform',
+  //       href: '/projects',
+  //       icon: BriefcaseIcon,
+  //       items: [
+  //         {
+  //           title: 'Overview',
+  //           href: '/projects/overview',
+  //         },
+  //         {
+  //           title: 'Browse Projects',
+  //           href: '/projects/browse',
+  //         },
+  //         {
+  //           title: 'Create Project',
+  //           href: '/projects/create',
+  //         },
+  //         {
+  //           title: 'View Project',
+  //           href: '/projects/1',
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       title: 'Social Platform',
+  //       href: '/social',
+  //       icon: ShareIcon,
+  //       items: [
+  //         {
+  //           title: 'Profile',
+  //           href: '/social/profile',
+  //         },
+  //         {
+  //           title: 'Feed',
+  //           href: '/social/feed',
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       title: 'Kanban',
+  //       href: '/kanban',
+  //       icon: TrelloIcon,
+  //     },
+  //     {
+  //       title: 'Mail',
+  //       href: '/mail',
+  //       icon: MailIcon,
+  //     },
+  //     {
+  //       title: 'Chat',
+  //       href: '/chat',
+  //       icon: MessageCircleIcon,
+  //       // eslint-disable-next-line react/display-name
+  //       info: () => <Chip color="secondary" size="small" label="Updated" />,
+  //     },
+  //     {
+  //       title: 'Calendar',
+  //       href: '/calendar',
+  //       icon: CalendarIcon,
+  //       // eslint-disable-next-line react/display-name
+  //       info: () => <Chip color="secondary" size="small" label="Updated" />,
+  //     },
+  //   ],
+  // },
+  // {
+  //   subheader: 'Auth',
+  //   items: [
+  //     {
+  //       title: 'Login',
+  //       href: '/login-unprotected',
+  //       icon: LockIcon,
+  //     },
+  //     {
+  //       title: 'Register',
+  //       href: '/register-unprotected',
+  //       icon: UserPlusIcon,
+  //     },
+  //   ],
+  // },
+  // {
+  //   subheader: 'Pages',
+  //   items: [
+  //     {
+  //       title: 'Account',
+  //       href: '/account',
+  //       icon: UserIcon,
+  //     },
+  //     {
+  //       title: 'Error',
+  //       href: '/404',
+  //       icon: AlertCircleIcon,
+  //     },
+  //     {
+  //       title: 'Pricing',
+  //       href: '/pricing',
+  //       icon: DollarSignIcon,
+  //     },
+  //   ],
+  // },
+  // {
+  //   subheader: 'Extra',
+  //   items: [
+  //     {
+  //       title: 'Charts',
+  //       href: '/extra/charts',
+  //       icon: BarChartIcon,
+  //       items: [
+  //         {
+  //           title: 'Apex Charts',
+  //           href: '/extra/charts/apex',
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       title: 'Forms',
+  //       href: '/extra/forms',
+  //       icon: EditIcon,
+  //       items: [
+  //         {
+  //           title: 'Formik',
+  //           href: '/extra/forms/formik',
+  //         },
+  //         {
+  //           title: 'Redux Forms',
+  //           href: '/extra/forms/redux',
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       title: 'Editors',
+  //       href: '/extra/editors',
+  //       icon: LayoutIcon,
+  //       items: [
+  //         {
+  //           title: 'DraftJS Editor',
+  //           href: '/extra/editors/draft-js',
+  //         },
+  //         {
+  //           title: 'Quill Editor',
+  //           href: '/extra/editors/quill',
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
 ];
 
 function renderNavItems({ items, pathname, depth = 0 }) {
@@ -468,8 +426,8 @@ const NavBar = ({ onMobileClose, openMobile }) => {
             </List>
           ))}
         </Box>
-        <Divider />
-        <Box p={2}>
+        {/* <Divider /> */}
+        {/* <Box p={2}>
           <Box p={2} borderRadius="borderRadius" bgcolor="background.dark">
             <Typography variant="h6" color="textPrimary">
               Need Help?
@@ -482,7 +440,7 @@ const NavBar = ({ onMobileClose, openMobile }) => {
               Check our docs
             </Link>
           </Box>
-        </Box>
+        </Box> */}
       </PerfectScrollbar>
     </Box>
   );
