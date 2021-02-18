@@ -120,6 +120,10 @@ const sections = [
             title: 'Create Product',
             href: '/products/create',
           },
+          {
+            title: 'Upload Products',
+            href: '/products/upload',
+          },
         ],
       },
       // {
@@ -426,7 +430,7 @@ const NavBar = ({ onMobileClose, openMobile }) => {
             </List>
           ))}
         </Box>
-        {/* <Divider /> */}
+        <Divider />
         {/* <Box p={2}>
           <Box p={2} borderRadius="borderRadius" bgcolor="background.dark">
             <Typography variant="h6" color="textPrimary">

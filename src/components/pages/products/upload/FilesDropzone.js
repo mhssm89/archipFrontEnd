@@ -3,18 +3,15 @@ import React from 'react';
 import {
   Box,
   Button,
-  IconButton,
   Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   makeStyles,
-  Tooltip,
   Typography,
 } from '@material-ui/core';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import MoreIcon from '@material-ui/icons/MoreVert';
 
 import clsx from 'clsx';
 import { useDropzone } from 'react-dropzone';
@@ -121,23 +118,13 @@ function FilesDropzone({ className, ...rest }) {
                     primaryTypographyProps={{ variant: 'h5' }}
                     secondary={bytesToSize(file.size)}
                   />
-                  <Tooltip title="More options">
-                    <IconButton edge="end">
-                      <MoreIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <Button onClick={handleRemoveAll} size="small">
+                    Remove
+                  </Button>
                 </ListItem>
               ))}
             </List>
           </PerfectScrollbar>
-          <div className={classes.actions}>
-            <Button onClick={handleRemoveAll} size="small">
-              Remove all
-            </Button>
-            <Button color="secondary" size="small" variant="contained">
-              Upload files
-            </Button>
-          </div>
         </>
       )}
     </div>
