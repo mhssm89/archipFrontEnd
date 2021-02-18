@@ -21,7 +21,6 @@ import {
 
 import clsx from 'clsx';
 import PoqSearchForm from 'src/components/pages/projects/create/PoqSearchForm';
-import FormInput from '../../../controls/FormInput';
 
 const useStyles = makeStyles((theme) => ({
   root: {},

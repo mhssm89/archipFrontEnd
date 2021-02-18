@@ -10,6 +10,8 @@ import * as yup from 'yup';
 import FormDatePicker from 'src/components/controls/FormDatePicker';
 import FormInput from 'src/components/controls/FormInput';
 import FormAutocomplete from 'src/components/controls/FormAutocomplete';
+import Results from 'src/components/pages/products/Results';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -84,6 +86,7 @@ function ProjectReview({
         <Typography variant="subtitle1" color="textSecondary">
           Please review all products attached to this project before save
         </Typography>
+        <Results/>
 
        
         <Box mt={6} display="flex">
