@@ -30,6 +30,7 @@ const validationSchema = yup.object().shape({
   amount: yup.number().required('required'),
   date: yup.date().nullable().typeError('Invalid date.').required('Required.'),
   type: yup.object().nullable().required('Required.'),
+  description: yup.string(255),
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -56,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
 const trasactionoption = [
   { label: 'Income', value: 'income' },
   { label: 'OutCome', value: 'outcome' },
- 
 ];
 
 function Invoices({ className, ...rest }) {
@@ -91,13 +91,12 @@ function Invoices({ className, ...rest }) {
               container
               spacing={2}
               className={classes.inputForm}
-              justify="center"
               alignItems="center">
               <Grid item md={4} xs={12}>
                 {/* amount of money*/}
                 <FormInput
                   name="amount"
-                  label="Amount (L.E)"
+                  label="Amount (EGP)"
                   variant="outlined"
                   type="number"
                   errorObj={errors}
@@ -113,7 +112,7 @@ function Invoices({ className, ...rest }) {
                   errorObj={errors}
                 />
               </Grid>
-              <Grid item md={3} xs={12}>
+              <Grid item md={4} xs={12}>
                 <DatePicker
                   name="date"
                   label="Transaction Date"
@@ -122,7 +121,18 @@ function Invoices({ className, ...rest }) {
                   errorObj={errors}
                 />
               </Grid>
-              <Grid item md={2} xs={12}>
+
+              <Grid item xs={8}>
+                {/* Add Button */}
+                <FormInput
+                  name="description"
+                  label="Description"
+                  variant="outlined"
+                  margin="auto"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={4} xs={12}>
                 {/* Add Button */}
                 <Button
                   variant="contained"
@@ -140,7 +150,7 @@ function Invoices({ className, ...rest }) {
       <Card className={clsx(classes.result, className)} {...rest}>
         <CardHeader title="Invoces/Billings" />
         <Divider />
-        <TransactionResult/>
+        <TransactionResult />
       </Card>
     </>
   );

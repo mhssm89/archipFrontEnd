@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //function ProjectInfo({ project, className, ...rest }) {
-function ProjectInfo({className, ...rest }) {
+function ProjectInfo({ className, ...rest }) {
   const classes = useStyles();
 
   return (
@@ -30,7 +30,9 @@ function ProjectInfo({className, ...rest }) {
       <Table>
         <TableBody>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>Project Name</TableCell>
+            <TableCell className={classes.fontWeightMedium}>
+              Project Name
+            </TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
                 {/* {project.firstName} */}
@@ -54,9 +56,15 @@ function ProjectInfo({className, ...rest }) {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>
-            Status
+            <TableCell className={classes.fontWeightMedium}>Status</TableCell>
+            <TableCell>
+              <Typography variant="body2" color="textSecondary">
+                {/* {project.state} */}
+              </Typography>
             </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell className={classes.fontWeightMedium}>scope</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
                 {/* {project.state} */}
@@ -65,7 +73,7 @@ function ProjectInfo({className, ...rest }) {
           </TableRow>
           <TableRow>
             <TableCell className={classes.fontWeightMedium}>
-            Start Date
+              Start Date
             </TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
@@ -74,9 +82,7 @@ function ProjectInfo({className, ...rest }) {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>
-            End Date
-            </TableCell>
+            <TableCell className={classes.fontWeightMedium}>End Date</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
                 {/* {project.phoneNumber} */}
@@ -85,7 +91,6 @@ function ProjectInfo({className, ...rest }) {
           </TableRow>
         </TableBody>
       </Table>
-      
     </Card>
   );
 }

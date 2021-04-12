@@ -92,6 +92,7 @@ function Results({ className, query, ...rest }) {
       projectName: 'Project 1',
       customerName: 'Mohamed Hossam',
       status: 'negotiation',
+      scope: 'commercial',
       startDate: '01-01-2021',
       endDate: '01-01-2021',
     },
@@ -100,6 +101,7 @@ function Results({ className, query, ...rest }) {
       projectName: 'Project 2',
       customerName: 'Mohamed Hossam',
       status: 'signed',
+      scope: 'commercial',
       startDate: '01-01-2021',
       endDate: '01-01-2021',
     },
@@ -108,6 +110,7 @@ function Results({ className, query, ...rest }) {
       projectName: 'Project 3',
       customerName: 'Mohamed Hossam',
       status: 'inprogress',
+      scope: 'commercial',
       startDate: '01-01-2021',
       endDate: '01-01-2021',
     },
@@ -116,6 +119,7 @@ function Results({ className, query, ...rest }) {
       projectName: 'Project 4',
       customerName: 'Mohamed Hossam',
       status: 'finished',
+      scope: 'commercial',
       startDate: '01-01-2021',
       endDate: '01-01-2021',
     },
@@ -158,6 +162,7 @@ function Results({ className, query, ...rest }) {
                   <TableCell>Name</TableCell>
                   <TableCell>Customer</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Scope</TableCell>
                   <TableCell>Start Date</TableCell>
                   <TableCell>End Date</TableCell>
                   <TableCell align="right">Actions</TableCell>
@@ -189,6 +194,7 @@ function Results({ className, query, ...rest }) {
                         <TableCell>{item.projectName}</TableCell>
                         <TableCell>{item.customerName}</TableCell>
                         <TableCell>{getStatusLabel(item.status)}</TableCell>
+                        <TableCell>{item.scope}</TableCell>
                         <TableCell>{item.startDate}</TableCell>
                         <TableCell>{item.endDate}</TableCell>
                         <TableCell align="right">

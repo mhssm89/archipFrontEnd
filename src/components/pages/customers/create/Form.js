@@ -18,6 +18,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import FormInput from 'src/components/controls/FormInput';
+import FormAutocomplete from 'src/components/controls/FormAutocomplete';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -27,13 +28,18 @@ const validationSchema = yup.object().shape({
   firstName: yup.string().max(255).required('Required.'),
   lastName: yup.string().max(255).required('Required.'),
   company: yup.string().max(255).required('Required.'),
-  position: yup.string().max(255).required('Required.'),
+  position: yup.string().max(255),
   email: yup.string().email('Invalid email.').max(255).required('Required.'),
   mobilePhone: yup.string().min(11).max(11).required('Required.'),
-  businessPhone1: yup.string().min(11).max(11).required('Required.'),
-  businessPhone2: yup.string().min(11).max(11).required('Required.'),
-  address: yup.string().max(255).required('Required.'),
+  businessPhone1: yup.string(),
+  category: yup.string(),
+  address: yup.string().max(255),
 });
+
+const gategorylist = [
+  { label: 'Business ', value: 'Business' },
+  { label: 'individual', value: 'individual' },
+];
 
 function Form({ className, ...rest }) {
   const classes = useStyles();
@@ -49,7 +55,7 @@ function Form({ className, ...rest }) {
       email: '',
       mobilePhone: '',
       businessPhone1: '',
-      businessPhone2: '',
+      category: '',
       address: '',
       submitError: '',
     },
@@ -129,10 +135,11 @@ function Form({ className, ...rest }) {
                 />
               </Grid>
               <Grid item md={6} xs={12}>
-                <FormInput
-                  name="businessPhone2"
-                  label="Business Phone Number 2"
+                <FormAutocomplete
+                  name="category"
+                  label="Category"
                   variant="outlined"
+                  options={gategorylist}
                   errorObj={errors}
                 />
               </Grid>

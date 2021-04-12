@@ -113,7 +113,7 @@ function Form({ className, product, ...rest }) {
               <Grid item md={6} xs={12}>
                 <FormInput
                   name="price"
-                  label="Price (L.E)"
+                  label="Price (EGP)"
                   type="number"
                   variant="outlined"
                   errorObj={errors}

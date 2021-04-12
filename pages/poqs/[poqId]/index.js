@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 const headerLinks = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Management', href: '#' },
-  { title: 'POQs', href: '/poqs' },
+  { title: 'Quotations', href: '/poqs' },
   { title: 'Details' },
 ];
 
@@ -82,11 +82,11 @@ function POQViewPage() {
       {isLoading ? (
         <LoadingScreen />
       ) : (
-        <Page className={classes.root} title="POQs - Details">
+        <Page className={classes.root} title="Quotations - Details">
           <Container maxWidth={false}>
             <Header
               links={headerLinks}
-              mainText="POQ Details"
+              mainText="Quotation Details"
               rightComponent={
                 <Button
                   color="primary"

@@ -85,6 +85,7 @@ function TransactionType({ className, query, ...rest }) {
       date: '01-01-2021',
       type: 'in',
       amount: '1000',
+      description: '#########',
     },
     {
       id: 2,
@@ -92,6 +93,7 @@ function TransactionType({ className, query, ...rest }) {
       date: '01-01-2021',
       type: 'out',
       amount: '125000',
+      description: '#########',
     },
     {
       id: 3,
@@ -99,6 +101,7 @@ function TransactionType({ className, query, ...rest }) {
       date: '01-01-2021',
       type: 'out',
       amount: '6000',
+      description: '#########',
     },
     {
       id: 4,
@@ -106,6 +109,7 @@ function TransactionType({ className, query, ...rest }) {
       date: '01-01-2021',
       type: 'in',
       amount: '600',
+      description: '#########',
     },
   ];
 
@@ -146,7 +150,8 @@ function TransactionType({ className, query, ...rest }) {
                   <TableCell>Number #</TableCell>
                   <TableCell>Date</TableCell>
                   <TableCell>Type</TableCell>
-                  <TableCell>Amount (L.E)</TableCell>
+                  <TableCell>Amount (EGP)</TableCell>
+                  <TableCell>Description</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -177,6 +182,7 @@ function TransactionType({ className, query, ...rest }) {
                         <TableCell>{item.date}</TableCell>
                         <TableCell>{getStatusLabel(item.type)}</TableCell>
                         <TableCell>{item.amount}</TableCell>
+                        <TableCell>{item.description}</TableCell>
                         <TableCell align="right">
                           <IconButton
                             onClick={() => {

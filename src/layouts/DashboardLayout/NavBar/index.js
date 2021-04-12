@@ -78,16 +78,16 @@ const sections = [
         ],
       },
       {
-        title: 'POQs',
+        title: 'Quotation',
         icon: ReceiptIcon,
         href: '/poqs',
         items: [
           {
-            title: 'List POQs',
+            title: 'List of Quotations',
             href: '/poqs',
           },
           {
-            title: 'Create POQ',
+            title: 'Create Quotation',
             href: '/poqs/create',
           },
         ],

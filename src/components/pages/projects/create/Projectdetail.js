@@ -30,6 +30,12 @@ const projectStatus = [
   { label: 'Finished', value: 'Finished' },
 ];
 
+const projectscope = [
+  { label: 'Personal', value: 'Personal' },
+  { label: 'Commercial', value: 'Commercial' },
+  { label: 'Industrial', value: 'Industrial' },
+];
+
 function Projectdetail({
   className,
   onBack = () => {},
@@ -42,6 +48,7 @@ function Projectdetail({
     resolver: yupResolver(validationSchema),
     defaultValues: {
       projectName: '',
+      ProjectScope: '',
       startDate: new Date(),
       endDate: new Date(),
       submitError: '',
@@ -95,6 +102,15 @@ function Projectdetail({
               label="Project Status"
               variant="outlined"
               options={projectStatus}
+              errorObj={errors}
+            />
+          </Box>
+          <Box mt={4}>
+            <FormAutocomplete
+              name="ProjectScope"
+              label="Project Scope"
+              variant="outlined"
+              options={projectscope}
               errorObj={errors}
             />
           </Box>

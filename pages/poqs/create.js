@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 const headerLinks = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Management', href: '#' },
-  { title: 'POQs', href: '/poqs' },
+  { title: 'Quotations', href: '/poqs' },
   { title: 'Create' },
 ];
 
@@ -28,9 +28,9 @@ function POQCreatePage() {
   const classes = useStyles();
 
   return (
-    <Page className={classes.root} title="POQs - Create">
+    <Page className={classes.root} title="Quotation - Create">
       <Container maxWidth={false}>
-        <Header links={headerLinks} mainText="Create POQ" />
+        <Header links={headerLinks} mainText="Create Quotation" />
 
         <Box mt={3}>
           <Form />

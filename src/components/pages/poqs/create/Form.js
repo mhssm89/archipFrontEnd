@@ -57,6 +57,10 @@ const validationSchema = yup.object().shape({
   shippingCost: yup.number().required('Required.'),
   otherCosts: yup.number(),
   totalCost: yup.number().required('Required.'),
+  totaldiscount: yup.number(),
+  grandtotal: yup.number().max(10).required('required'),
+  vat: yup.number().max(2),
+  vatpercentage: yup.number().max(10),
 });
 
 function Form({ className, ...rest }) {
@@ -74,6 +78,9 @@ function Form({ className, ...rest }) {
       shippingCost: 0,
       otherCosts: 0,
       totalCost: 0,
+      totaldiscount: 0,
+      grandtotal: 0,
+      vat: 0,
       submitError: '',
     },
   });
@@ -165,7 +172,7 @@ function Form({ className, ...rest }) {
                       {/* Shipping Cost */}
                       <FormInput
                         name="shippingCost"
-                        label="Shipping Cost (L.E)"
+                        label="Shipping Cost (EGP)"
                         type="number"
                         variant="outlined"
                         errorObj={errors}
@@ -175,7 +182,17 @@ function Form({ className, ...rest }) {
                       {/* Other Costs */}
                       <FormInput
                         name="otherCosts"
-                        label="Other Costs (L.E)"
+                        label="Other Costs (EGP)"
+                        type="number"
+                        variant="outlined"
+                        errorObj={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={12}>
+                      {/* total discount */}
+                      <FormInput
+                        name="totaldiscount"
+                        label="Total discount (EGP)"
                         type="number"
                         variant="outlined"
                         errorObj={errors}
@@ -185,7 +202,37 @@ function Form({ className, ...rest }) {
                       {/* Total Cost */}
                       <FormInput
                         name="totalCost"
-                        label="Total Cost (L.E)"
+                        label="Total Cost (EGP)"
+                        type="number"
+                        variant="outlined"
+                        errorObj={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={6} md={6}>
+                      {/* Vat */}
+                      <FormInput
+                        name="vatpercentage"
+                        label="VAT %"
+                        type="number"
+                        variant="outlined"
+                        errorObj={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={6} md={6}>
+                      {/* Vat */}
+                      <FormInput
+                        name="vat"
+                        label="VAT (EGP)"
+                        type="number"
+                        variant="outlined"
+                        errorObj={errors}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={12}>
+                      {/* grand total */}
+                      <FormInput
+                        name="grandtotal"
+                        label="Grand total"
                         type="number"
                         variant="outlined"
                         errorObj={errors}

@@ -74,7 +74,7 @@ function Statistics({ className, ...rest }) {
             className={classes.overline}
             variant="overline"
             color="textSecondary">
-            Total Collected
+            Total Collected from Customers
           </Typography>
         </Grid>
         <Grid className={classes.item} item md={3} sm={6} xs={12}>
@@ -85,7 +85,7 @@ function Statistics({ className, ...rest }) {
             className={classes.overline}
             variant="overline"
             color="textSecondary">
-            Total Paid
+            Total Paid by ARCH-IP
           </Typography>
         </Grid>
         <Grid className={classes.item} item md={3} sm={6} xs={12}>

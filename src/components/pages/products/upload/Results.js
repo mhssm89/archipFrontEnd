@@ -116,7 +116,7 @@ function Results({ className, query, ...rest }) {
                       <TableCell>Part #</TableCell>
                       <TableCell>Name</TableCell>
                       <TableCell>Description</TableCell>
-                      <TableCell>Price (L.E)</TableCell>
+                      <TableCell>Price (EGP)</TableCell>
                       <TableCell>Discount (%)</TableCell>
                     </TableRow>
                   </TableHead>

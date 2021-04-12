@@ -84,7 +84,7 @@ function IncomeResult({ className, query, ...rest }) {
               <TableHead>
                 <TableRow>
                   <TableCell>Date</TableCell>
-                  <TableCell>Amount (L.E)</TableCell>
+                  <TableCell>Amount (EGP)</TableCell>
                 </TableRow>
               </TableHead>
               {isTableLoading ? (

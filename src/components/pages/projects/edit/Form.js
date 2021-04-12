@@ -187,7 +187,7 @@ function Form({ className, project, ...rest }) {
                       {/* Shipping Cost */}
                       <FormInput
                         name="shippingCost"
-                        label="Shipping Cost (L.E)"
+                        label="Shipping Cost (EGP)"
                         type="number"
                         variant="outlined"
                         errorObj={errors}
@@ -197,7 +197,7 @@ function Form({ className, project, ...rest }) {
                       {/* Other Costs */}
                       <FormInput
                         name="otherCosts"
-                        label="Other Costs (L.E)"
+                        label="Other Costs (EGP)"
                         type="number"
                         variant="outlined"
                         errorObj={errors}
@@ -207,7 +207,7 @@ function Form({ className, project, ...rest }) {
                       {/* Total Cost */}
                       <FormInput
                         name="totalCost"
-                        label="Total Cost (L.E)"
+                        label="Total Cost (EGP)"
                         type="number"
                         variant="outlined"
                         errorObj={errors}

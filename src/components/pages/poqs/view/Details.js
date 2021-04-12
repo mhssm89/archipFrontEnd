@@ -87,17 +87,17 @@ function Details({ className, poq, ...rest }) {
             <TableBody>
               <TableRow>
                 <TableCell>Shipping Cost</TableCell>
-                <TableCell>{`100 L.E`}</TableCell>
+                <TableCell>{`100 EGP`}</TableCell>
               </TableRow>
 
               <TableRow>
                 <TableCell>Other Costs</TableCell>
-                <TableCell>{`100 L.E`}</TableCell>
+                <TableCell>{`100 EGP`}</TableCell>
               </TableRow>
 
               <TableRow>
                 <TableCell>Total Cost</TableCell>
-                <TableCell>{`1000 L.E`}</TableCell>
+                <TableCell>{`1000 EGP`}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

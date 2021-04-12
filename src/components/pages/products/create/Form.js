@@ -52,6 +52,7 @@ function Form({ className, ...rest }) {
       name: '',
       description: '',
       price: '',
+      DiscountInput: 0,
       discount: 0,
       submitError: '',
     },
@@ -113,13 +114,21 @@ function Form({ className, ...rest }) {
               <Grid item md={6} xs={12}>
                 <FormInput
                   name="price"
-                  label="Price (L.E)"
+                  label="Price (EGP)"
                   type="number"
                   variant="outlined"
                   errorObj={errors}
                 />
               </Grid>
-              <Grid item md={6} xs={12}>
+              <Grid item md={3} xs={12}>
+                <FormInput
+                  name="DiscountInput"
+                  label="Discount (EGP)"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={3} xs={12}>
                 <FormSlider
                   name="discount"
                   label={`Discount (${watch('discount')}%)`}

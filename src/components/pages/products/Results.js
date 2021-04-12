@@ -65,8 +65,13 @@ function Results({ className, query, ...rest }) {
     {
       id: 1,
       partNo: '123456',
+      partName: 'sensore',
+      partBrand: 'honeywell',
       price: '100',
       discount: '5',
+      partdescription: 'this is desc.',
+      partdatasheet: 'link',
+      partstatus: ' expired',
       priceUpdatedOn: '01-01-2021',
     },
   ];
@@ -106,8 +111,13 @@ function Results({ className, query, ...rest }) {
                     />
                   </TableCell>
                   <TableCell>Part #</TableCell>
-                  <TableCell>Price (L.E)</TableCell>
+                  <TableCell>Part Name</TableCell>
+                  <TableCell>Brand</TableCell>
+                  <TableCell>Price (EGP)</TableCell>
                   <TableCell>Discount (%)</TableCell>
+                  <TableCell>Part desc.</TableCell>
+                  <TableCell>Part Data sheet</TableCell>
+                  <TableCell>Part Status</TableCell>
                   <TableCell>Price Last Update</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
@@ -136,8 +146,13 @@ function Results({ className, query, ...rest }) {
                           />
                         </TableCell>
                         <TableCell>{item.partNo}</TableCell>
+                        <TableCell>{item.partName}</TableCell>
+                        <TableCell>{item.partBrand}</TableCell>
                         <TableCell>{item.price}</TableCell>
                         <TableCell>{item.discount}</TableCell>
+                        <TableCell>{item.partdescription}</TableCell>
+                        <TableCell>{item.partdatasheet}</TableCell>
+                        <TableCell>{item.partstatus}</TableCell>
                         <TableCell>{item.priceUpdatedOn}</TableCell>
                         <TableCell align="right">
                           <IconButton
@@ -147,13 +162,13 @@ function Results({ className, query, ...rest }) {
                               <EditIcon />
                             </SvgIcon>
                           </IconButton>
-                          <IconButton
+                          {/* <IconButton
                             component={Link}
                             href={`/products/${item.id}`}>
                             <SvgIcon fontSize="small">
                               <ArrowRightIcon />
                             </SvgIcon>
-                          </IconButton>
+                          </IconButton> */}
                         </TableCell>
                       </TableRow>
                     );

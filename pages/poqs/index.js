@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 const headerLinks = [
   { title: 'Dashboard', href: '/dashboard' },
   { title: 'Management', href: '#' },
-  { title: 'POQs' },
+  { title: 'Quotations' },
 ];
 
 const POQs = [];
@@ -53,11 +53,11 @@ function POQsPage() {
   }, [getPoqs]);
 
   return (
-    <Page className={classes.root} title="POQs - All">
+    <Page className={classes.root} title="Quotations - All">
       <Container maxWidth={false}>
         <Header
           links={headerLinks}
-          mainText="All POQs"
+          mainText="All Quotations"
           rightComponent={
             <Button
               color="secondary"
