@@ -22,7 +22,11 @@ import {
 
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
-import { Search as SearchIcon, Trash as TrashIcon } from 'react-feather';
+import {
+  AlignCenter,
+  Search as SearchIcon,
+  Trash as TrashIcon,
+} from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import useTable from 'src/hooks/useTable';
@@ -33,7 +37,7 @@ const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-function Results({ className, query, ...rest }) {
+function Results({ className, query, setproduct, transferRate, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
@@ -55,17 +59,7 @@ function Results({ className, query, ...rest }) {
     handlePageChange,
     handleLimitChange,
   } = useTable({ query });
-
-  const items = [
-    {
-      id: 1,
-      partNo: '123456',
-      quantity: 15,
-      price: '100',
-      discount: '5',
-    },
-  ];
-
+  console.log(query);
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
@@ -83,8 +77,11 @@ function Results({ className, query, ...rest }) {
                   </TableCell>
                   <TableCell>Part #</TableCell>
                   <TableCell>Quantity</TableCell>
-                  <TableCell>Price (EGP)</TableCell>
+                  <TableCell>Price</TableCell>
+                  <TableCell>Currency</TableCell>
                   <TableCell>Discount (%)</TableCell>
+                  <TableCell>Sale Percentage (%) </TableCell>
+                  <TableCell>Sale price </TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -94,9 +91,9 @@ function Results({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.map((item) => {
                     const isItemSelected = selectedItems.includes(item.id);
-
+                    console.log(query);
                     return (
                       <TableRow
                         hover
@@ -111,12 +108,55 @@ function Results({ className, query, ...rest }) {
                             value={isItemSelected}
                           />
                         </TableCell>
-                        <TableCell>{item.partNo}</TableCell>
-                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell>{item.partNumber}</TableCell>
+                        <TableCell>{item.qnty}</TableCell>
                         <TableCell>{item.price}</TableCell>
+                        <TableCell>{item.currency['name']}</TableCell>
                         <TableCell>{item.discount}</TableCell>
+                        <TableCell style={{ width: '20%' }}>
+                          <TextField
+                            type="number"
+                            name={`salepercent${item.id}`}
+                            defaultValue={0}
+                            variant="outlined"
+                            style={{ width: '70%', textAlign: 'center' }}
+                            onChange={(e) => {
+                              item.saleprice =
+                                (item.price * Number(e.target.value)) / 100 +
+                                item.price;
+                              item.salepercentage = Number(e.target.value);
+                              setproduct([...query]);
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {/* {item.saleprice
+                            ? currency['name'] == 'USD'
+                              ? item.saleprice * transferRate.usd
+                              : item.saleprice * transferRate.eur
+                            : currency['name'] == 'USD'
+                            ? item.price * transferRate.usd
+                            : item.price * transferRate.eur} */}
+                          {(() => {
+                            if (item.saleprice) {
+                              if (item.currency['name'] === 'USD') {
+                                return item.saleprice * transferRate.usd;
+                              }
+                              if (item.currency['name'] === 'EUR') {
+                                return item.saleprice * transferRate.eur;
+                              }
+                            } else {
+                              if (item.currency['name'] === 'USD') {
+                                return item.price * transferRate.usd;
+                              }
+                              if (item.currency['name'] === 'EUR') {
+                                return item.price * transferRate.eur;
+                              }
+                            }
+                          })()}
+                        </TableCell>
                         <TableCell align="right">
-                          <IconButton onClick={() => {}}>
+                          <IconButton onClick={() => deleteProduct(item.id)}>
                             <SvgIcon fontSize="small">
                               <TrashIcon />
                             </SvgIcon>
@@ -141,8 +181,8 @@ function Results({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.length == 0) return '0-0';
+            return `${from}-${from + query.length - 1}`;
           }}
         />
       </Card>
@@ -156,6 +196,11 @@ function Results({ className, query, ...rest }) {
       />
     </div>
   );
+
+  function deleteProduct(productId) {
+    setproduct(query.filter((item) => item.id != productId));
+    enqueueSnackbar('deleted', { variant: 'error' });
+  }
 }
 
 export default Results;

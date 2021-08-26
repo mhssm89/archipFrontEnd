@@ -21,24 +21,23 @@ import FormDatePicker from 'src/components/controls/FormDatePicker';
 import FormInput from 'src/components/controls/FormInput';
 import FormSelect from 'src/components/controls/FormSelect';
 import FormSlider from 'src/components/controls/FormSlider';
+import CurrencyAutocomplete from '../create/currencyAutocomplete';
+import SupplierAutoComplete from 'src/components/pages/products/upload/supplierAutocomplete.js';
 
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
 const validationSchema = yup.object().shape({
-  partNo: yup.string().max(255).required('Required.'),
+  partNumber: yup.string().max(255).required('Required.'),
   brand: yup.string().max(255).required('Required.'),
-  name: yup.string().max(255).required('Required.'),
-  description: yup.string().max(255).required('Required.'),
+  partName: yup.string().max(255).required('Required.'),
+  desc: yup.string().max(255).required('Required.'),
   price: yup.number().required('Required.'),
   discount: yup.number().min(0).max(100).required('Required.'),
+  currency: yup.object(),
+  supplierName: yup.object(),
 });
-
-const BRAND_OPTIONS = [
-  { id: 1, label: 'Brand 1' },
-  { id: 2, label: 'Brand 2' },
-];
 
 function Form({ className, product, ...rest }) {
   const classes = useStyles();
@@ -47,13 +46,17 @@ function Form({ className, product, ...rest }) {
     mode: 'all',
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      partNo: product.partNo || '',
+      partNumber: product.partNumber || '',
       brand: product.brand || '',
-      name: product.name || '',
-      description: product.description || '',
+      partName: product.partName || '',
+      desc: product.desc || '',
       price: product.price || '',
       discount: product.discount || 0,
       submitError: '',
+      supplierName: {
+        label: product.supplier['supplierName'],
+        value: product.supplier['supplierName'],
+      },
     },
   });
   const {
@@ -77,24 +80,23 @@ function Form({ className, product, ...rest }) {
             <Grid container spacing={3}>
               <Grid item md={6} xs={12}>
                 <FormInput
-                  name="partNo"
+                  name="partNumber"
                   label="Part #"
                   variant="outlined"
                   errorObj={errors}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
-                <FormSelect
+                <FormInput
                   name="brand"
                   label="Brand"
-                  options={BRAND_OPTIONS}
                   variant="outlined"
                   errorObj={errors}
                 />
               </Grid>
               <Grid item md={12} xs={12}>
                 <FormInput
-                  name="name"
+                  name="partName"
                   label="Name"
                   variant="outlined"
                   errorObj={errors}
@@ -102,7 +104,7 @@ function Form({ className, product, ...rest }) {
               </Grid>
               <Grid item md={12} xs={12}>
                 <FormInput
-                  name="description"
+                  name="desc"
                   label="Description"
                   variant="outlined"
                   multiline
@@ -120,11 +122,25 @@ function Form({ className, product, ...rest }) {
                 />
               </Grid>
               <Grid item md={6} xs={12}>
-                <FormSlider
+                <CurrencyAutocomplete
+                  name="currency"
+                  label="currency "
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <SupplierAutoComplete
+                  name="supplierName"
+                  label="supplier"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={3} xs={12}>
+                <FormInput
                   name="discount"
-                  label={`Discount (${watch('discount')}%)`}
-                  min={0}
-                  max={100}
+                  label="Discount"
                   variant="outlined"
                   errorObj={errors}
                 />
@@ -161,7 +177,7 @@ function Form({ className, product, ...rest }) {
   );
 
   // ##################################################
-  async function onSubmit({ partNo }) {
+  async function onSubmit({ partNumber }) {
     try {
       // Reset submitError message
       setValue('submitError', '');

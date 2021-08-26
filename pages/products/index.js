@@ -12,6 +12,7 @@ import Protected from 'src/components/common/Protected';
 import Results from 'src/components/pages/products/Results';
 import useIsMountedRef from 'src/hooks/useIsMountedRef';
 import DashboardLayout from 'src/layouts/DashboardLayout';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,10 +39,12 @@ function ProductsPage() {
 
   const getProducts = React.useCallback(async () => {
     try {
-      const data = { products: PRODUCTS };
-
+      const res = await axios.get(
+        'http://localhost:1337/products/?_where[isDeleted]=0',
+      );
+      const data = res.data;
       if (isMountedRef.current) {
-        setProducts(data.products);
+        setProducts(data);
       }
     } catch (err) {
       console.error(err);
@@ -75,7 +78,7 @@ function ProductsPage() {
         />
 
         <Box mt={3}>
-          <Results query="" />
+          <Results query={products} setquery={setProducts} />
         </Box>
       </Container>
     </Page>

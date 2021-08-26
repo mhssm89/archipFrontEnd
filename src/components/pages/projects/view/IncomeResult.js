@@ -4,87 +4,84 @@ import {
   Box,
   Card,
   CardHeader,
-  Checkbox,
   CircularProgress,
   Divider,
-  IconButton,
-  InputAdornment,
   makeStyles,
-  SvgIcon,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
+  Typography,
 } from '@material-ui/core';
 
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
-import {
-  ArrowRight as ArrowRightIcon,
-  Edit as EditIcon,
-  Search as SearchIcon,
-  Trash as TrashIcon,
-} from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import Link from 'src/components/common/Link';
-
+import { useRouter } from 'next/router';
+import axios from 'axios';
 import useTable from 'src/hooks/useTable';
 
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-function IncomeResult({ className, query, ...rest }) {
+function IncomeResult({ className, settotalincome, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
+
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
+  const [transaction, setTransaction] = React.useState([]);
   const {
-    // items,
-    selectedItems,
-    isAllItemsSelected,
-    isSomeItemsSelected,
     page,
     limit,
     hasNext,
     hasPrev,
     isLoading: isTableLoading,
-    setItems,
-    setSelectedItems,
-    enableBulkOperations,
-    handleSelectAllItems,
-    handleSelectOneItem,
     handlePageChange,
     handleLimitChange,
-  } = useTable({ query });
+  } = useTable({ transaction });
 
-  const items = [
-    {
-      id: '1',
-      date: '12/12/2020',
-      amount: '1500',
-    },
-    {
-      id: '2',
-      date: '2/4/2020',
-      amount: '2000',
-    },
-  ];
+  const projectId = router.query['projectId'];
+  React.useEffect(() => {
+    if (projectId) {
+      fetchTransaction();
+    }
+  }, [projectId]);
 
-  return (
+  async function fetchTransaction() {
+    try {
+      if (!projectId) return;
+      const res = await axios.get(
+        `http://localhost:1337/transactions?_where[type]=in&[project]=${projectId}`,
+      );
+      setTransaction(res.data);
+      var total = 0;
+      res.data.map((item) => {
+        total = total + item.amount;
+        return total;
+      });
+      settotalincome(total);
+    } catch (err) {
+      enqueueSnackbar(`error ${err}`, { variant: 'error' });
+    }
+  }
+
+  return transaction ? (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
-        <CardHeader title="Income payment" />
+        <CardHeader title="Income payment" style={{ background: '#CDDCE3' }} />
         <Divider />
         <PerfectScrollbar>
           <Box minWidth={700}>
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell>Serial</TableCell>
                   <TableCell>Date</TableCell>
-                  <TableCell>Amount (EGP)</TableCell>
+                  <TableCell>Amount </TableCell>
                 </TableRow>
               </TableHead>
               {isTableLoading ? (
@@ -93,9 +90,10 @@ function IncomeResult({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {transaction.map((item) => {
                     return (
                       <TableRow hover key={item.id}>
+                        <TableCell>{item.id}</TableCell>
                         <TableCell>{item.date}</TableCell>
                         <TableCell>{item.amount}</TableCell>
                       </TableRow>
@@ -117,12 +115,14 @@ function IncomeResult({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (transaction.length == 0) return '0-0';
+            return `${from}-${from + transaction.length - 1}`;
           }}
         />
       </Card>
     </div>
+  ) : (
+    <Typography>Waiting transaction</Typography>
   );
 }
 

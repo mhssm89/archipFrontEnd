@@ -16,8 +16,11 @@ import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
-
+import axios from 'axios';
 import FormInput from 'src/components/controls/FormInput';
+import { useRouter } from 'next/router';
+import CustomerCatAuto from 'src/components/controls/CustomerCategoryAuto';
+import BrokerAutocomplete from 'src/components/controls/BrokerAutocomplete';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -26,34 +29,49 @@ const useStyles = makeStyles(() => ({
 const validationSchema = yup.object().shape({
   firstName: yup.string().max(255).required('Required.'),
   lastName: yup.string().max(255).required('Required.'),
-  company: yup.string().max(255).required('Required.'),
-  position: yup.string().max(255).required('Required.'),
+  company: yup.string().max(255),
+  position: yup.string().max(255),
   email: yup.string().email('Invalid email.').max(255).required('Required.'),
   mobilePhone: yup.string().min(11).max(11).required('Required.'),
-  businessPhone1: yup.string().min(11).max(11).required('Required.'),
-  businessPhone2: yup.string().min(11).max(11).required('Required.'),
-  address: yup.string().max(255).required('Required.'),
+  businessPhone1: yup.string(),
+  category: yup.object(),
+  address: yup.string().max(255),
+  broker: yup.object().nullable(),
 });
 
 function Form({ className, customer, ...rest }) {
+  const router = useRouter();
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+
   const methods = useForm({
     mode: 'all',
     resolver: yupResolver(validationSchema),
     defaultValues: {
       firstName: customer.firstName || '',
       lastName: customer.lastName || '',
-      company: customer.company || '',
+      company: customer.companyName || '',
       position: customer.position || '',
-      email: customer.email || '',
-      mobilePhone: customer.mobilePhone || '',
-      businessPhone1: customer.businessPhone1 || '',
-      businessPhone2: customer.businessPhone2 || '',
+      email: customer.emailaddress || '',
+      mobilePhone: customer.phoneNumber || '',
+      businessPhone1: customer.businessPhone || '',
+      category: customer.customer_category
+        ? {
+            id: customer.customer_category.id,
+            name: customer.customer_category.category,
+          } || ''
+        : '',
       address: customer.address || '',
       submitError: '',
+      broker: customer.broker
+        ? {
+            id: '1',
+            name: `${customer.broker.firstname} ${customer.broker.lastname}`,
+          } || ''
+        : '',
     },
   });
+
   const {
     handleSubmit,
     errors,
@@ -61,7 +79,6 @@ function Form({ className, customer, ...rest }) {
     setValue,
     formState: { isSubmitting, isDirty, dirtyFields },
   } = methods;
-
   return (
     <FormProvider {...methods}>
       <form
@@ -71,6 +88,16 @@ function Form({ className, customer, ...rest }) {
         <Card>
           <CardContent>
             <Grid container spacing={3}>
+              <Grid item lg={12} spacing={6}>
+                <Grid item md={6} xs={12}>
+                  <BrokerAutocomplete
+                    name="broker"
+                    label="Broker"
+                    variant="outlined"
+                    errorObj={errors}
+                  />
+                </Grid>
+              </Grid>
               <Grid item md={6} xs={12}>
                 <FormInput
                   name="firstName"
@@ -122,15 +149,15 @@ function Form({ className, customer, ...rest }) {
               <Grid item md={6} xs={12}>
                 <FormInput
                   name="businessPhone1"
-                  label="Business Phone Number 1"
+                  label="Business Phone Number "
                   variant="outlined"
                   errorObj={errors}
                 />
               </Grid>
               <Grid item md={6} xs={12}>
-                <FormInput
-                  name="businessPhone2"
-                  label="Business Phone Number 2"
+                <CustomerCatAuto
+                  name="category"
+                  label="Category"
                   variant="outlined"
                   errorObj={errors}
                 />
@@ -175,7 +202,17 @@ function Form({ className, customer, ...rest }) {
   );
 
   // ##################################################
-  async function onSubmit({ firstName, lastName }) {
+  async function onSubmit({
+    firstName,
+    lastName,
+    company,
+    position,
+    email,
+    mobilePhone,
+    address,
+    category,
+    broker,
+  }) {
     try {
       // Reset submitError message
       setValue('submitError', '');
@@ -186,6 +223,28 @@ function Form({ className, customer, ...rest }) {
         return;
       }
 
+      const customerId = router.query['customerId'];
+      const data = {
+        firstName: firstName,
+        lastName: lastName,
+        companyName: company,
+        position: position,
+        emailaddress: email,
+        phoneNumber: mobilePhone,
+        customer_category: category.id,
+        address: address,
+        broker: broker ? broker.id : null,
+      };
+      const response = await axios
+        .put('http://localhost:1337/customers/' + customerId, data)
+        .then(() => {
+          enqueueSnackbar('Customer created successfully.', {
+            variant: 'success',
+          });
+        })
+        .catch(() => {
+          enqueueSnackbar('Error creating new customer.', { variant: 'error' });
+        });
       // Contsruct input
       // const input = {
       //   name,
@@ -195,7 +254,6 @@ function Form({ className, customer, ...rest }) {
       // Make an API request
 
       // Show success message
-      enqueueSnackbar('Customer updated successfully.', { variant: 'success' });
     } catch (err) {
       // Show error message
       enqueueSnackbar('Error updating customer.', { variant: 'error' });

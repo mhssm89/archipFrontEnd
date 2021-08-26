@@ -9,14 +9,22 @@ import {
   makeStyles,
   Table,
   TableBody,
+  TableHead,
   TableCell,
   TableRow,
   Typography,
+  IconButton,
+  CircularProgress,
+  SvgIcon,
 } from '@material-ui/core';
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
-import ReceiptIcon from '@material-ui/icons/ReceiptOutlined';
+import Link from 'src/components/common/Link';
 
+import useTable from 'src/hooks/useTable';
+import { useRouter } from 'next/router';
+import useIsMountedRef from 'src/hooks/useIsMountedRef';
+import axios from 'axios';
 import clsx from 'clsx';
+import { ArrowRight as ArrowRightIcon, Edit as EditIcon } from 'react-feather';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -25,20 +33,51 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CustomerProjectdetail({ customer, className, ...rest }) {
+function CustomerProjectdetail({ className, ...rest }) {
   const classes = useStyles();
+  const [projects, setProjects] = React.useState([]);
+  const isMountedRef = useIsMountedRef();
+  const router = useRouter();
+
+  const {
+    selectedItems,
+    isLoading: isTableLoading,
+    handleSelectOneItem,
+  } = useTable({ projects });
+
+  const getProjects = React.useCallback(async () => {
+    try {
+      const customerId = router.query['customerId'];
+      const res = await axios.get(
+        `http://localhost:1337/projects?_where[customer]=${customerId}`,
+      );
+      const data = res.data;
+      setProjects(data);
+      if (isMountedRef.current) {
+        setProjects(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [isMountedRef]);
+
+  React.useEffect(() => {
+    getProjects();
+  }, [getProjects]);
+
+  if (!projects) {
+    return null;
+  }
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
       <CardHeader title="Customer Project Summery" />
       <Divider />
       <Table>
-        <TableBody>
-        <TableRow>
+        <TableHead>
+          <TableRow>
             <TableCell className={classes.fontWeightMedium}>
-              <Typography>
-              Project Name
-              </Typography>
+              <Typography>Project Name</Typography>
             </TableCell>
             <TableCell>
               <Typography className={classes.fontWeightMedium}>
@@ -57,65 +96,49 @@ function CustomerProjectdetail({ customer, className, ...rest }) {
             </TableCell>
             <TableCell>
               <Typography className={classes.fontWeightMedium}>
-                Total Cost
+                Grand Total
               </Typography>
             </TableCell>
+            <TableCell align="right">Actions</TableCell>
           </TableRow>
-          {/* <TableRow>
-            <TableCell className={classes.fontWeightMedium}>
-              Credit Card
-            </TableCell>
-            <TableCell>
-              <Typography variant="body2" color="textSecondary">
-                {customer.creditCard}
-              </Typography>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className={classes.fontWeightMedium}>Paid</TableCell>
-            <TableCell>
-              <Typography variant="body2" color="textSecondary">
-                2 ($50.00)
-              </Typography>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className={classes.fontWeightMedium}>Draft</TableCell>
-            <TableCell>
-              <Typography variant="body2" color="textSecondary">
-                1 ($5.00)
-              </Typography>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className={classes.fontWeightMedium}>
-              Unpaid/Due
-            </TableCell>
-            <TableCell>
-              <Typography variant="body2" color="textSecondary">
-                1 ($12.00)
-              </Typography>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className={classes.fontWeightMedium}>Refunded</TableCell>
-            <TableCell>
-              <Typography variant="body2" color="textSecondary">
-                0 ($0.00)
-              </Typography>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className={classes.fontWeightMedium}>
-              Gross Income
-            </TableCell>
-            <TableCell>
-              <Typography variant="body2" color="textSecondary">
-                $1,200.00
-              </Typography>
-            </TableCell>
-          </TableRow> */}
-        </TableBody>
+        </TableHead>
+        {isTableLoading ? (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <TableBody>
+            {projects.map((item) => {
+              const isItemSelected = selectedItems.includes(item.id);
+              return (
+                <TableRow
+                  hover
+                  key={item.id}
+                  selected={selectedItems.indexOf(item.id) !== -1}>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.status}</TableCell>
+                  <TableCell>{item.startDate}</TableCell>
+                  <TableCell>{item.endDate}</TableCell>
+                  <TableCell>{item.grandTotal}</TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      component={Link}
+                      href={`/projects/${item.id}/edit`}>
+                      <SvgIcon fontSize="small">
+                        <EditIcon />
+                      </SvgIcon>
+                    </IconButton>
+                    <IconButton component={Link} href={`/projects/${item.id}`}>
+                      <SvgIcon fontSize="small">
+                        <ArrowRightIcon />
+                      </SvgIcon>
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        )}
       </Table>
     </Card>
   );

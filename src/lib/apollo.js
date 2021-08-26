@@ -3,7 +3,7 @@ import { setContext } from '@apollo/client/link/context';
 import { withApollo } from 'next-apollo';
 
 const httpLink = createHttpLink({
-  uri: 'http://52.4.19.221:1337/graphql',
+  uri: 'http://localhost:1337/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {

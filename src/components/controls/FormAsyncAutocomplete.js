@@ -19,7 +19,12 @@ import { errorHandler } from './utils';
 //   country: yup.object().nullable().required('Country is required'),
 // });
 
-function FormAsyncAutocomplete({ name, label = '', errorObj = {}, ...props }) {
+function FormAsyncAutocomplete({
+  name,
+  label = '',
+  errorObj = {},
+  ...props
+}) {
   const { control } = useFormContext();
   const {
     field: { ref, onChange, ...inputProps },
@@ -39,8 +44,10 @@ function FormAsyncAutocomplete({ name, label = '', errorObj = {}, ...props }) {
 
     // Make an API request
     const response = await fetch(
-      'https://country.register.gov.uk/records.json?page-size=5000',
+      //'https://country.register.gov.uk/records.json?page-size=5000',
+      
     );
+    console.log(url);
     const countries = await response.json();
     setOptions(Object.keys(countries).map((key) => countries[key].item[0]));
 

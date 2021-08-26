@@ -1,17 +1,15 @@
 import React from 'react';
-
 import { useRouter } from 'next/router';
-
 import { Box, Container, makeStyles } from '@material-ui/core';
-
 import { useSnackbar } from 'notistack';
-
 import Header from 'src/components/common/Header';
 import LoadingScreen from 'src/components/common/LoadingScreen';
 import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
 import Form from 'src/components/pages/poqs/edit/Form';
 import DashboardLayout from 'src/layouts/DashboardLayout';
+import useIsMountedRef from 'src/hooks/useIsMountedRef';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,51 +27,18 @@ const headerLinks = [
   { title: 'Edit' },
 ];
 
-const POQ = {
-  number: 123456,
-  customerName: 'Mohamed Hossam',
-  startDate: new Date(),
-  endDate: new Date(),
-  shippingAddress: 'New Cairo',
-  shippingCost: 100,
-  otherCosts: 100,
-  totalCost: 1000,
-  products: [
-    {
-      id: 1,
-      partNo: '123456',
-      quantity: 15,
-      price: '100',
-      discount: '5',
-    },
-    {
-      id: 2,
-      partNo: '789101',
-      quantity: 20,
-      price: '30',
-      discount: '10',
-    },
-    {
-      id: 3,
-      partNo: '65489',
-      quantity: 100,
-      price: '12',
-      discount: '3',
-    },
-  ],
-};
-
 function POQEditPage() {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-  const [poq, setPOQ] = React.useState(POQ);
+  const isMountedRef = useIsMountedRef();
   const [isLoading, setIsLoading] = React.useState(true);
-
+  const [all, setAll] = React.useState({});
   const poqId = router.query['poqId'];
-
   React.useEffect(() => {
-    fetchPOQ();
+    if (poqId) {
+      fetchPOQ();
+    }
   }, [poqId]);
 
   return (
@@ -86,27 +51,29 @@ function POQEditPage() {
             <Header links={headerLinks} mainText="Edit Quotation" />
 
             <Box mt={3}>
-              <Form poq={poq} />
+              <Form poq={all} setPOQ={setAll} />
             </Box>
           </Container>
         </Page>
       )}
     </>
   );
-  // ##################################################
   async function fetchPOQ() {
     try {
-      // Return if not poqId
       if (!poqId) return;
-
-      // Make an API request
-
-      // setPOQ();
+      const poq = await axios.get('http://localhost:1337/poqs/' + poqId);
+      if (poq.status === 200) {
+        const poqdetail = await axios.get(
+          'http://localhost:1337/poqdetails?_where[poq]=' + poq.data.id,
+        );
+        const details = poqdetail.data;
+        setAll({ poq: poq.data, poqDetail: details });
+        setIsLoading(false);
+      }
     } catch (err) {
-      enqueueSnackbar('Error has been occurred.', { variant: 'error' });
-    } finally {
-      // Finish
       setIsLoading(false);
+      console.error(err);
+      enqueueSnackbar('error in loading Qutaion', { variant: 'error' });
     }
   }
 }

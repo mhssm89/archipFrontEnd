@@ -1,18 +1,15 @@
 import React from 'react';
-
 import { useRouter } from 'next/router';
-
 // import { API } from 'aws-amplify';
 import { Box, Container, makeStyles } from '@material-ui/core';
-
 import { useSnackbar } from 'notistack';
-
 import Header from 'src/components/common/Header';
 import LoadingScreen from 'src/components/common/LoadingScreen';
 import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
 import Form from 'src/components/pages/customers/edit/Form';
 import DashboardLayout from 'src/layouts/DashboardLayout';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,33 +21,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const headerLinks = [
-  { title: 'Dashboard', href: '/dashboard' },
   { title: 'Management', href: '#' },
   { title: 'Customers', href: '/customers' },
   { title: 'Edit' },
 ];
 
-const CUSTOMER = {
-  firstName: 'Mohamed',
-  lastName: 'Hossam',
-  company: 'Freelance',
-  position: 'Manager',
-  email: 'mohamed@archip.com',
-  mobilePhone: '01234567891',
-  businessPhone1: '01234567891',
-  businessPhone2: '01234567891',
-  address: 'New Cairo',
-};
-
 function CustomerEditPage() {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-  const [customer, setCustomer] = React.useState(CUSTOMER);
+  const [customer, setCustomer] = React.useState({});
   const [isLoading, setIsLoading] = React.useState(true);
 
   const customerId = router.query['customerId'];
-
   React.useEffect(() => {
     fetchCustomer();
   }, [customerId]);
@@ -64,7 +47,6 @@ function CustomerEditPage() {
           <Container maxWidth={false}>
             <Header links={headerLinks} mainText="Edit Customer" />
           </Container>
-
           <Box mt={3}>
             <Container maxWidth="lg">
               <Form customer={customer} />
@@ -82,6 +64,10 @@ function CustomerEditPage() {
 
       // Make an API request
 
+      const res = await axios.get(
+        'http://localhost:1337/customers/' + customerId,
+      );
+      setCustomer(res.data);
       // setCustomer();
     } catch (err) {
       enqueueSnackbar('Error has been occurred.', { variant: 'error' });

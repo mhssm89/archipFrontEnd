@@ -1,17 +1,14 @@
 import React from 'react';
-
 import { useRouter } from 'next/router';
-
 import { Box, Button, Container, makeStyles, SvgIcon } from '@material-ui/core';
-
 import { PlusCircle as PlusCircleIcon } from 'react-feather';
-
 import Header from 'src/components/common/Header';
 import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
 import Results from 'src/components/pages/projects/Results';
 import useIsMountedRef from 'src/hooks/useIsMountedRef';
 import DashboardLayout from 'src/layouts/DashboardLayout';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,8 +25,6 @@ const headerLinks = [
   { title: 'Projects' },
 ];
 
-const PROJECTS = [];
-
 function ProjectsPage() {
   const classes = useStyles();
   const router = useRouter();
@@ -38,10 +33,12 @@ function ProjectsPage() {
 
   const getProjects = React.useCallback(async () => {
     try {
-      const data = { projects: PROJECTS };
-
+      const res = await axios.get(
+        'http://localhost:1337/projects?_where[isDeleted]=0',
+      );
+      const data = res.data;
       if (isMountedRef.current) {
-        setProjects(data.projects);
+        setProjects(data);
       }
     } catch (err) {
       console.error(err);
@@ -75,7 +72,7 @@ function ProjectsPage() {
         />
 
         <Box mt={3}>
-          <Results query="" />
+          <Results query={projects} setquery={setProjects} />
         </Box>
       </Container>
     </Page>

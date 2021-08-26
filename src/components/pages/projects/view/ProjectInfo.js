@@ -11,6 +11,7 @@ import {
   TableRow,
   Typography,
 } from '@material-ui/core';
+
 import clsx from 'clsx';
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -20,12 +21,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //function ProjectInfo({ project, className, ...rest }) {
-function ProjectInfo({ className, ...rest }) {
+function ProjectInfo({ className, project, ...rest }) {
   const classes = useStyles();
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
-      <CardHeader title="project info" />
+      <CardHeader title="project info" style={{ background: '#CDDCE3' }} />
       <Divider />
       <Table>
         <TableBody>
@@ -35,7 +36,7 @@ function ProjectInfo({ className, ...rest }) {
             </TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {/* {project.firstName} */}
+                {project.name}
               </Typography>
             </TableCell>
           </TableRow>
@@ -43,15 +44,16 @@ function ProjectInfo({ className, ...rest }) {
             <TableCell className={classes.fontWeightMedium}>Customer</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {/* {project.lastName} */}
+                {project.customer['firstName']}
+                {project.customer['lastName']}
               </Typography>
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>P.O.Q #</TableCell>
+            <TableCell className={classes.fontWeightMedium}>B.O.Q #</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {/* {project.company} */}
+                {project.poq['Name']}
               </Typography>
             </TableCell>
           </TableRow>
@@ -59,7 +61,7 @@ function ProjectInfo({ className, ...rest }) {
             <TableCell className={classes.fontWeightMedium}>Status</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {/* {project.state} */}
+                {project.status}
               </Typography>
             </TableCell>
           </TableRow>
@@ -67,7 +69,7 @@ function ProjectInfo({ className, ...rest }) {
             <TableCell className={classes.fontWeightMedium}>scope</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {/* {project.state} */}
+                {project.type}
               </Typography>
             </TableCell>
           </TableRow>
@@ -77,7 +79,7 @@ function ProjectInfo({ className, ...rest }) {
             </TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {/* {project.email} */}
+                {project.startDate}
               </Typography>
             </TableCell>
           </TableRow>
@@ -85,7 +87,7 @@ function ProjectInfo({ className, ...rest }) {
             <TableCell className={classes.fontWeightMedium}>End Date</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {/* {project.phoneNumber} */}
+                {project.endDate}
               </Typography>
             </TableCell>
           </TableRow>

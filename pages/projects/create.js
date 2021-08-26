@@ -117,6 +117,8 @@ function CreatePage() {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, ssetCompleted] = React.useState(false);
+  const [poq, setPoq] = React.useState(null);
+  const [project, setProject] = React.useState(null);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -151,14 +153,21 @@ function CreatePage() {
               </Grid>
               <Grid item xs={12} md={9}>
                 <Box p={3}>
-                  {activeStep === 0 && <Poqdetail onNext={handleNext} />}
+                  {activeStep === 0 && (
+                    <Poqdetail onNext={handleNext} handlePoq={setPoq} />
+                  )}
                   {activeStep === 1 && (
-                    <Projectdetail onBack={handleBack} onNext={handleNext} />
+                    <Projectdetail
+                      onBack={handleBack}
+                      onNext={handleNext}
+                      handleProject={setProject}
+                    />
                   )}
                   {activeStep === 2 && (
                     <ProjectReview
                       onBack={handleBack}
                       onComplete={handleComplete}
+                      projectData={{ poq, project }}
                     />
                   )}
                 </Box>

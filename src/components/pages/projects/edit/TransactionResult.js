@@ -31,6 +31,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import Label from 'src/components/common/Label';
 import Link from 'src/components/common/Link';
 import useTable from 'src/hooks/useTable';
+import axios from 'axios';
 
 import BulkOperations from './BulkOperations';
 
@@ -55,7 +56,7 @@ const getStatusLabel = (transactiontype) => {
   return <Label color={color}>{text}</Label>;
 };
 
-function TransactionType({ className, query, ...rest }) {
+function TransactionType({ className, query, setinvoices, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
@@ -78,41 +79,40 @@ function TransactionType({ className, query, ...rest }) {
     handleLimitChange,
   } = useTable({ query });
 
-  const items = [
-    {
-      id: 1,
-      no: '1',
-      date: '01-01-2021',
-      type: 'in',
-      amount: '1000',
-      description: '#########',
-    },
-    {
-      id: 2,
-      no: '35',
-      date: '01-01-2021',
-      type: 'out',
-      amount: '125000',
-      description: '#########',
-    },
-    {
-      id: 3,
-      no: '52',
-      date: '01-01-2021',
-      type: 'out',
-      amount: '6000',
-      description: '#########',
-    },
-    {
-      id: 4,
-      no: '99',
-      date: '01-01-2021',
-      type: 'in',
-      amount: '600',
-      description: '#########',
-    },
-  ];
-
+  // const items = [
+  //   {
+  //     id: 1,
+  //     no: '1',
+  //     date: '01-01-2021',
+  //     type: 'in',
+  //     amount: '1000',
+  //     description: '#########',
+  //   },
+  //   {
+  //     id: 2,
+  //     no: '35',
+  //     date: '01-01-2021',
+  //     type: 'out',
+  //     amount: '125000',
+  //     description: '#########',
+  //   },
+  //   {
+  //     id: 3,
+  //     no: '52',
+  //     date: '01-01-2021',
+  //     type: 'out',
+  //     amount: '6000',
+  //     description: '#########',
+  //   },
+  //   {
+  //     id: 4,
+  //     no: '99',
+  //     date: '01-01-2021',
+  //     type: 'in',
+  //     amount: '600',
+  //     description: '#########',
+  //   },
+  // ];
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
@@ -151,6 +151,7 @@ function TransactionType({ className, query, ...rest }) {
                   <TableCell>Date</TableCell>
                   <TableCell>Type</TableCell>
                   <TableCell>Amount (EGP)</TableCell>
+                  <TableCell>Bank Transaction #</TableCell>
                   <TableCell>Description</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
@@ -161,7 +162,7 @@ function TransactionType({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.map((item) => {
                     const isItemSelected = selectedItems.includes(item.id);
 
                     return (
@@ -178,27 +179,23 @@ function TransactionType({ className, query, ...rest }) {
                             value={isItemSelected}
                           />
                         </TableCell>
-                        <TableCell>{item.no}</TableCell>
+                        <TableCell>{item.id}</TableCell>
                         <TableCell>{item.date}</TableCell>
                         <TableCell>{getStatusLabel(item.type)}</TableCell>
                         <TableCell>{item.amount}</TableCell>
+                        <TableCell>{item.bankTransaction}</TableCell>
                         <TableCell>{item.description}</TableCell>
                         <TableCell align="right">
                           <IconButton
-                            onClick={() => {
-                              enqueueSnackbar('Print Invoice', {
-                                variant: 'success',
-                              });
-                            }}>
+                            component={Link}
+                            href={`/invoices/${item.id}`}>
                             <SvgIcon fontSize="small">
                               <Printer />
                             </SvgIcon>
                           </IconButton>
                           <IconButton
                             onClick={() => {
-                              enqueueSnackbar('Invoice has been deleted', {
-                                variant: 'error',
-                              });
+                              deleteInvoice(item.id);
                             }}>
                             <SvgIcon fontSize="small">
                               <Trash />
@@ -224,8 +221,8 @@ function TransactionType({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.length == 0) return '0-0';
+            return `${from}-${from + query.length - 1}`;
           }}
         />
       </Card>
@@ -239,6 +236,19 @@ function TransactionType({ className, query, ...rest }) {
       />
     </div>
   );
+  function deleteInvoice(invoiceID) {
+    axios
+      .delete(`http://localhost:1337/transactions/${invoiceID}`)
+      .then(() => {
+        setinvoices([...query.filter((item) => item.id != invoiceID)]);
+        enqueueSnackbar('Invoice has been deleted', {
+          variant: 'error',
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 }
 
 export default TransactionType;

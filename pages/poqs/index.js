@@ -12,6 +12,7 @@ import Protected from 'src/components/common/Protected';
 import Results from 'src/components/pages/poqs/Results';
 import useIsMountedRef from 'src/hooks/useIsMountedRef';
 import DashboardLayout from 'src/layouts/DashboardLayout';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,10 +39,12 @@ function POQsPage() {
 
   const getPoqs = React.useCallback(async () => {
     try {
-      const data = { poqs: POQs };
-
+      const res = await axios.get(
+        'http://localhost:1337/poqs/?_where[isDeleted]=0',
+      );
+      const data = res.data;
       if (isMountedRef.current) {
-        setPoqs(data.poqs);
+        setPoqs(data);
       }
     } catch (err) {
       console.error(err);
@@ -75,7 +78,7 @@ function POQsPage() {
         />
 
         <Box mt={3}>
-          <Results query="" />
+          <Results query={poqs} setquery={setPoqs} />
         </Box>
       </Container>
     </Page>

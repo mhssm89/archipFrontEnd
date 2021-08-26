@@ -28,12 +28,13 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import useTable from 'src/hooks/useTable';
 
 import BulkOperations from './BulkOperations';
+import axios from 'axios';
 
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-function Results({ className, query, ...rest }) {
+function Results({ className, query, setPOQ, transferRate, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
@@ -55,31 +56,6 @@ function Results({ className, query, ...rest }) {
     handlePageChange,
     handleLimitChange,
   } = useTable({ query });
-
-  const items = [
-    {
-      id: 1,
-      partNo: '123456',
-      quantity: 15,
-      price: '100',
-      discount: '5',
-    },
-    {
-      id: 2,
-      partNo: '789101',
-      quantity: 20,
-      price: '30',
-      discount: '10',
-    },
-    {
-      id: 3,
-      partNo: '65489',
-      quantity: 100,
-      price: '12',
-      discount: '3',
-    },
-  ];
-
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
@@ -97,8 +73,11 @@ function Results({ className, query, ...rest }) {
                   </TableCell>
                   <TableCell>Part #</TableCell>
                   <TableCell>Quantity</TableCell>
-                  <TableCell>Price (EGP)</TableCell>
+                  <TableCell>Price </TableCell>
+                  <TableCell>Currency</TableCell>
                   <TableCell>Discount (%)</TableCell>
+                  <TableCell>Sale Percentage (%)</TableCell>
+                  <TableCell>Sale price </TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -108,7 +87,7 @@ function Results({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.poqDetail.map((item) => {
                     const isItemSelected = selectedItems.includes(item.id);
 
                     return (
@@ -125,12 +104,77 @@ function Results({ className, query, ...rest }) {
                             value={isItemSelected}
                           />
                         </TableCell>
-                        <TableCell>{item.partNo}</TableCell>
-                        <TableCell>{item.quantity}</TableCell>
-                        <TableCell>{item.price}</TableCell>
-                        <TableCell>{item.discount}</TableCell>
+                        <TableCell>{item.product.partNumber}</TableCell>
+                        <TableCell style={{ width: '10%' }}>
+                          <TextField
+                            type="number"
+                            name={`qnty${item.id}`}
+                            variant="outlined"
+                            value={item.qnty}
+                            onChange={(e) => {
+                              item.qnty = Number(e.target.value);
+                              setPOQ({ ...query });
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>{item.enduserprice}</TableCell>
+                        <TableCell>
+                          {(() => {
+                            switch (item.product.currency) {
+                              case 1:
+                                return 'EGP';
+                              case 2:
+                                return 'USD';
+                              case 3:
+                                return 'EUR';
+                            }
+                          })()}
+                        </TableCell>
+                        <TableCell>{item.product.discount}</TableCell>
+                        <TableCell style={{ width: '20%' }}>
+                          <TextField
+                            type="number"
+                            name={`salepercent${item.id}`}
+                            variant="outlined"
+                            value={item.salepercentage}
+                            style={{ width: '60%' }}
+                            onChange={(e) => {
+                              // e.target.value < 0
+                              //   ? (e.target.value = 0)
+                              //   : e.target.value;
+                              item.saleprice =
+                                (item.enduserprice * Number(e.target.value)) /
+                                  100 +
+                                item.enduserprice;
+                              item.salepercentage = Number(e.target.value);
+                              setPOQ({ ...query });
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {/* {Math.round((item.saleprice + Number.EPSILON) * 100) /
+                            100} */}
+                          {/* {(() => {
+                            if (item.saleprice) {
+                              if (item.product.currency == 2) {
+                                return item.saleprice * transferRate.usd;
+                              }
+                              if (item.product.currency == 3) {
+                                return item.saleprice * transferRate.eur;
+                              }
+                            } else {
+                              if (item.product.currency == 2) {
+                                return item.enduserprice * transferRate.usd;
+                              }
+                              if (item.product.currency == 3) {
+                                return item.enduserprice * transferRate.eur;
+                              }
+                            }
+                          })()} */}
+                          {item.saleprice}
+                        </TableCell>
                         <TableCell align="right">
-                          <IconButton onClick={() => {}}>
+                          <IconButton onClick={() => deleteProduct(item.id)}>
                             <SvgIcon fontSize="small">
                               <TrashIcon />
                             </SvgIcon>
@@ -155,8 +199,8 @@ function Results({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.poqDetail.length == 0) return '0-0';
+            return `${from}-${from + query.poqDetail.length - 1}`;
           }}
         />
       </Card>
@@ -170,6 +214,19 @@ function Results({ className, query, ...rest }) {
       />
     </div>
   );
+
+  // setPOQ({ ...query, poqDetail: xxxxxxxxxx })
+
+  //delete product
+  function deleteProduct(productId) {
+    axios.delete(`http://localhost:1337/poqdetails/${productId}`).then(() => {
+      setPOQ({
+        ...query,
+        poqDetail: query.poqDetail.filter((item) => item.id != productId),
+      });
+      enqueueSnackbar('deleted', { variant: 'error' });
+    });
+  }
 }
 
 export default Results;

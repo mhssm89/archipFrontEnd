@@ -32,36 +32,39 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Statistics({ className, ...rest }) {
+function Statistics({ className, total, totalincome, totaloutcome, ...rest }) {
   const classes = useStyles();
   const isMountedRef = useIsMountedRef();
-  const [statistics, setStatistics] = React.useState(null);
+  const statistics = {
+    totalcollected: totalincome,
+    totalpaid: totaloutcome,
+    totalcost: total,
+  };
+  // const getStatistics = React.useCallback(async () => {
+  //   try {
+  //     const data = {
+  //       statistics: {
+  //         totalcollected: totalincome,
+  //         totalpaid: 90000,
+  //         totalcost: total,
+  //       },
+  //     };
 
-  const getStatistics = React.useCallback(async () => {
-    try {
-      const data = {
-        statistics: {
-          totalcollected: 120000,
-          totalpaid: 90000,
-          totalcost: 160000,
-        },
-      };
+  //     if (isMountedRef.current) {
+  //       setStatistics(data.statistics);
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }, [isMountedRef]);
 
-      if (isMountedRef.current) {
-        setStatistics(data.statistics);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [isMountedRef]);
+  // React.useEffect(() => {
+  //   getStatistics();
+  // }, [getStatistics]);
 
-  React.useEffect(() => {
-    getStatistics();
-  }, [getStatistics]);
-
-  if (!statistics) {
-    return null;
-  }
+  // if (!statistics) {
+  //   return null;
+  // }
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>

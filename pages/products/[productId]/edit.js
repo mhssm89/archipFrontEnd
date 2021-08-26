@@ -13,6 +13,7 @@ import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
 import Form from 'src/components/pages/products/edit/Form';
 import DashboardLayout from 'src/layouts/DashboardLayout';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,7 +50,9 @@ function ProductEditPage() {
   const productId = router.query['productId'];
 
   React.useEffect(() => {
-    fetchProduct();
+    if (productId) {
+      fetchProduct();
+    }
   }, [productId]);
 
   return (
@@ -76,6 +79,10 @@ function ProductEditPage() {
     try {
       // Return if not productId
       if (!productId) return;
+      const res = await axios.get(
+        `http://localhost:1337/products/${productId}`,
+      );
+      setProduct(res.data);
 
       // Make an API request
 

@@ -1,0 +1,9 @@
+{
+  "h1": "مثال بسيط",
+  "change-locale": "تغيير اللغة",
+  "to-second-page": "إلى الصفحة التالية",
+  "error-with-status": "خطأ حدث على السيرفر {{statusCode}}",
+  "error-without-status": "خطأ حدث على السيرفر",
+  "login": "تسجيل الدخول",
+  "hello-world": "أهلا بالعالم"
+}

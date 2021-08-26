@@ -18,6 +18,9 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Grid,
+  Dialog,
+  Button,
 } from '@material-ui/core';
 
 import clsx from 'clsx';
@@ -25,23 +28,49 @@ import { useSnackbar } from 'notistack';
 import {
   ArrowRight as ArrowRightIcon,
   Edit as EditIcon,
+  Trash as TrashIcon,
   Search as SearchIcon,
 } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import Link from 'src/components/common/Link';
 import useTable from 'src/hooks/useTable';
-
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { FormProvider, useForm } from 'react-hook-form';
+import FormSelect from '../../controls/FormSelect';
+import FormInput from 'src/components/controls/FormInput';
 import BulkOperations from './BulkOperations';
-
+import axios from 'axios';
+import DeleteDialoge from '../../controls/DeleteDialoug';
 const useStyles = makeStyles(() => ({
   root: {},
 }));
+const validationSchema = yup.object().shape({
+  filter: yup
+    .object()
+    .shape({ label: yup.string(), id: yup.string() })
+    .nullable(),
+  search: yup.string(),
+});
 
-function Results({ className, query, ...rest }) {
+const filterOptions = [
+  { label: 'fist name', id: 'firstName' },
+  { label: 'Last name', id: 'lastName' },
+  { label: 'Compnay', id: 'companyName' },
+  { label: 'Phone Number', id: 'phonenumber' },
+  { label: 'Email address', id: 'emailaddress' },
+  { label: 'Position', id: 'position' },
+  { label: 'Customer Categoery', id: 'customer_category.category' },
+];
+
+function Results({ className, query, setquery, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
+  const [OpenDeleteDialoge, setOpenDeleteDialoge] = React.useState(false);
+  const [deleteItem, setDeleteItem] = React.useState({});
+
   const {
     // items,
     selectedItems,
@@ -61,38 +90,78 @@ function Results({ className, query, ...rest }) {
     handleLimitChange,
   } = useTable({ query });
 
-  const items = [
-    {
-      id: 1,
-      firstName: 'Mohamed',
-      lastName: 'Hossam',
-      company: 'Freelance',
-      phoneNumber: '0123456789',
-      email: 'mohamed@example.com',
+  const methods = useForm({
+    mode: 'all',
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      filter: filterOptions[0],
+      search: '',
     },
-  ];
-
+  });
+  const {
+    handleSubmit,
+    errors,
+    setError,
+    setValue,
+    reset,
+    watch,
+    formState: { isSubmitting },
+  } = methods;
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
-        <Box p={2}>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SvgIcon fontSize="small" color="action">
-                    <SearchIcon />
-                  </SvgIcon>
-                </InputAdornment>
-              ),
-            }}
-            style={{ width: '25%' }}
-            onChange={() => {}}
-            placeholder="Search Customers"
-            value=""
-            variant="outlined"
-          />
-        </Box>
+        <FormProvider {...methods}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className={clsx(classes.root, className)}
+            {...rest}>
+            <Grid
+              container
+              spacing={3}
+              alignItems={'center'}
+              style={{ paddingTop: '1rem', margin: 'auto' }}>
+              <Grid item xs={4}>
+                <FormSelect
+                  options={filterOptions}
+                  name="filter"
+                  label="Filter"
+                  variant="outlined"
+                  setValue={setValue}
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={4} xs={6}>
+                <FormInput
+                  name="search"
+                  label="Search"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleSubmit(onSubmit)}>
+                  Search
+                </Button>
+                <Button
+                  variant="outlined"
+                  type="button"
+                  color="secondary"
+                  style={{ marginLeft: '1rem' }}
+                  disabled={isSubmitting}
+                  onClick={() => {
+                    resetFilter();
+                  }}>
+                  reset
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        </FormProvider>
         <Divider />
         <PerfectScrollbar>
           <Box minWidth={700}>
@@ -107,9 +176,12 @@ function Results({ className, query, ...rest }) {
                     />
                   </TableCell>
                   <TableCell>Name</TableCell>
+
                   <TableCell>Company</TableCell>
+                  <TableCell>Position</TableCell>
                   <TableCell>Phone Number</TableCell>
                   <TableCell>Email</TableCell>
+                  <TableCell>Customer Category</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -119,7 +191,7 @@ function Results({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.map((item) => {
                     const isItemSelected = selectedItems.includes(item.id);
 
                     return (
@@ -137,10 +209,23 @@ function Results({ className, query, ...rest }) {
                           />
                         </TableCell>
                         <TableCell>{`${item.firstName} ${item.lastName}`}</TableCell>
-                        <TableCell>{item.company}</TableCell>
+                        <TableCell>{item.companyName}</TableCell>
+                        <TableCell>{item.position}</TableCell>
                         <TableCell>{item.phoneNumber}</TableCell>
-                        <TableCell>{item.email}</TableCell>
+                        <TableCell>{item.emailaddress}</TableCell>
+                        <TableCell>{item.customer_category.category}</TableCell>
                         <TableCell align="right">
+                          <IconButton
+                            onClick={() =>
+                              handelDialog({
+                                id: item.id,
+                                name: `${item.firstName} ${item.lastName} Customer`,
+                              })
+                            }>
+                            <SvgIcon fontSize="small">
+                              <TrashIcon />
+                            </SvgIcon>
+                          </IconButton>
                           <IconButton
                             component={Link}
                             href={`/customers/${item.id}/edit`}>
@@ -175,8 +260,8 @@ function Results({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.length == 0) return '0-0';
+            return `${from}-${from + query.length - 1}`;
           }}
         />
       </Card>
@@ -188,8 +273,75 @@ function Results({ className, query, ...rest }) {
         onMarkInactive={() => {}}
         onDelete={() => {}}
       />
+      <Dialog open={OpenDeleteDialoge}>
+        <DeleteDialoge
+          setOpenDialoge={setOpenDeleteDialoge}
+          deletedValue={deleteItem.name}
+          runFunction={deletecustomer}
+        />
+      </Dialog>
     </div>
   );
+
+  async function resetFilter() {
+    try {
+      axios
+        .get('http://localhost:1337/customers?_where[isDeleted]=0')
+        .then((res) => {
+          setquery(res.data);
+        });
+    } catch {
+      (err) => {
+        console.log(err);
+      };
+    }
+  }
+  async function onSubmit({ filter, search }) {
+    try {
+      // Reset submitError message
+      setValue('submitError', '');
+
+      //   status: status ? 'ACTIVE' : 'INACTIVE',
+      // };
+      axios
+        .get(
+          `http://localhost:1337/customers?_where[${filter.id}_contains]=${search}&[isDeleted]=0`,
+        )
+        .then((res) => {
+          console.log(res.data);
+          setquery(res.data);
+          enqueueSnackbar('Filter applied', {
+            variant: 'success',
+          });
+        })
+        .catch((err) => {
+          enqueueSnackbar('Error in filtering', { variant: 'error' });
+          console.log(err);
+        });
+    } catch (err) {
+      // Show error message
+      enqueueSnackbar('Error in filtering', { variant: 'error' });
+      console.log(err);
+
+      // Show submitError message
+      setError('submitError', {
+        type: 'submit',
+        message: 'Error creating new product.',
+      });
+    }
+  }
+  function handelDialog(customer) {
+    setOpenDeleteDialoge(true);
+    setDeleteItem(customer);
+  }
+
+  async function deletecustomer() {
+    axios
+      .put(`http://localhost:1337/customers/${deleteItem.id}`, { isDeleted: 1 })
+      .then((deletedItem) => {
+        setquery(query.filter((item) => item.id != deleteItem.id));
+      });
+  }
 }
 
 export default Results;

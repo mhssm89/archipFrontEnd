@@ -19,8 +19,10 @@ import * as yup from 'yup';
 
 import FormDatePicker from 'src/components/controls/FormDatePicker';
 import FormInput from 'src/components/controls/FormInput';
-import FormSelect from 'src/components/controls/FormSelect';
-import FormSlider from 'src/components/controls/FormSlider';
+
+import CurrencyAutocomplete from './currencyAutocomplete';
+import SupplierAutoComplete from 'src/components/pages/products/upload/supplierAutocomplete.js';
+import axios from 'axios';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -30,15 +32,17 @@ const validationSchema = yup.object().shape({
   partNo: yup.string().max(255).required('Required.'),
   brand: yup.string().max(255).required('Required.'),
   name: yup.string().max(255).required('Required.'),
-  description: yup.string().max(255).required('Required.'),
+  description: yup.string().max(255),
   price: yup.number().required('Required.'),
-  discount: yup.number().min(0).max(100).required('Required.'),
+  discount: yup.string().max(255),
+  currency: yup.object(),
+  supplierName: yup.object(),
 });
 
-const BRAND_OPTIONS = [
-  { id: 1, label: 'Brand 1' },
-  { id: 2, label: 'Brand 2' },
-];
+// const BRAND_OPTIONS = [
+//   { id: 1, label: 'Brand 1' },
+//   { id: 2, label: 'Brand 2' },
+// ];
 
 function Form({ className, ...rest }) {
   const classes = useStyles();
@@ -52,9 +56,9 @@ function Form({ className, ...rest }) {
       name: '',
       description: '',
       price: '',
-      DiscountInput: 0,
       discount: 0,
       submitError: '',
+      supplierName: '',
     },
   });
   const {
@@ -85,10 +89,9 @@ function Form({ className, ...rest }) {
                 />
               </Grid>
               <Grid item md={6} xs={12}>
-                <FormSelect
+                <FormInput
                   name="brand"
                   label="Brand"
-                  options={BRAND_OPTIONS}
                   variant="outlined"
                   errorObj={errors}
                 />
@@ -114,26 +117,32 @@ function Form({ className, ...rest }) {
               <Grid item md={6} xs={12}>
                 <FormInput
                   name="price"
-                  label="Price (EGP)"
+                  label="Price "
                   type="number"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <CurrencyAutocomplete
+                  name="currency"
+                  label="currency "
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <SupplierAutoComplete
+                  name="supplierName"
+                  label="supplier"
                   variant="outlined"
                   errorObj={errors}
                 />
               </Grid>
               <Grid item md={3} xs={12}>
                 <FormInput
-                  name="DiscountInput"
-                  label="Discount (EGP)"
-                  variant="outlined"
-                  errorObj={errors}
-                />
-              </Grid>
-              <Grid item md={3} xs={12}>
-                <FormSlider
                   name="discount"
-                  label={`Discount (${watch('discount')}%)`}
-                  min={0}
-                  max={100}
+                  label="Discount"
                   variant="outlined"
                   errorObj={errors}
                 />
@@ -170,28 +179,45 @@ function Form({ className, ...rest }) {
   );
 
   // ##################################################
-  async function onSubmit({ partNo }) {
+  async function onSubmit({
+    partNo,
+    brand,
+    name,
+    description,
+    price,
+    currency,
+    supplierName,
+    discount,
+  }) {
     try {
       // Reset submitError message
       setValue('submitError', '');
+      const input = {
+        partNumber: partNo,
+        partName: name,
+        brand: brand,
+        discount: discount,
+        desc: description,
+        price: price,
+        currency: currency['id'],
+        supplier: supplierName['id'],
+      };
 
-      // Contsruct input
-      // const input = {
-      //   name,
+      console.log(input);
+
       //   status: status ? 'ACTIVE' : 'INACTIVE',
       // };
-
-      // Make an API request
-      // await API.graphql({
-      //   query: createProductClass,
-      //   variables: { input },
-      // });
-
-      // Reset form
-      reset();
-
-      // Show success message
-      enqueueSnackbar('Product created successfully.', { variant: 'success' });
+      const resp = await axios
+        .post('http://localhost:1337/products', input)
+        .then(() => {
+          reset();
+          enqueueSnackbar('Product created successfully.', {
+            variant: 'success',
+          });
+        })
+        .catch(() => {
+          enqueueSnackbar('Error creating new product.', { variant: 'error' });
+        });
     } catch (err) {
       // Show error message
       enqueueSnackbar('Error creating new product.', { variant: 'error' });

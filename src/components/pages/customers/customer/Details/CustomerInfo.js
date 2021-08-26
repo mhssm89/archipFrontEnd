@@ -29,7 +29,9 @@ function CustomerInfo({ customer, className, ...rest }) {
       <Table>
         <TableBody>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>First Name</TableCell>
+            <TableCell className={classes.fontWeightMedium}>
+              First Name
+            </TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
                 {customer.firstName}
@@ -37,7 +39,9 @@ function CustomerInfo({ customer, className, ...rest }) {
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>Last Name</TableCell>
+            <TableCell className={classes.fontWeightMedium}>
+              Last Name
+            </TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
                 {customer.lastName}
@@ -48,27 +52,23 @@ function CustomerInfo({ customer, className, ...rest }) {
             <TableCell className={classes.fontWeightMedium}>Company</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {customer.company}
+                {customer.companyName}
               </Typography>
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>
-              Position
-            </TableCell>
+            <TableCell className={classes.fontWeightMedium}>position</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {customer.state}
+                {customer.position}
               </Typography>
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>
-             Email
-            </TableCell>
+            <TableCell className={classes.fontWeightMedium}>Email</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {customer.email}
+                {customer.emailaddress}
               </Typography>
             </TableCell>
           </TableRow>
@@ -88,24 +88,20 @@ function CustomerInfo({ customer, className, ...rest }) {
             </TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {customer.businessPhone1}
+                {customer.businessPhone}
               </Typography>
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>
-              Business Phone Number 2
-            </TableCell>
+            <TableCell className={classes.fontWeightMedium}>Category</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
-                {customer.businessPhone2}
+                {customer.customer_category.category}
               </Typography>
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell className={classes.fontWeightMedium}>
-              Address
-            </TableCell>
+            <TableCell className={classes.fontWeightMedium}>Address</TableCell>
             <TableCell>
               <Typography variant="body2" color="textSecondary">
                 {customer.address}
@@ -114,7 +110,6 @@ function CustomerInfo({ customer, className, ...rest }) {
           </TableRow>
         </TableBody>
       </Table>
-      
     </Card>
   );
 }

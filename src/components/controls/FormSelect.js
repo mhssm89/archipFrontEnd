@@ -17,7 +17,14 @@ import { errorHandler } from './utils';
 //   sel: yup.string().required('Select field is required'),
 // });
 
-function FormSelect({ name, label = '', options, errorObj = {}, ...props }) {
+function FormSelect({
+  name,
+  label = '',
+  options,
+  setValue,
+  errorObj = {},
+  ...props
+}) {
   const { control } = useFormContext();
   const {
     field: { ref, ...inputProps },
@@ -30,7 +37,14 @@ function FormSelect({ name, label = '', options, errorObj = {}, ...props }) {
   return (
     <FormControl fullWidth error={isError} {...props}>
       <InputLabel htmlFor={name}>{label}</InputLabel>
-      <Select id={name} {...inputProps} inputRef={ref} {...props}>
+      <Select
+        id={name}
+        {...inputProps}
+        ref={ref}
+        {...props}
+        onChange={(e) =>
+          setValue('filter', { id: e.target.value, label: e.target.name })
+        }>
         {options.map((item) => (
           <MenuItem key={item.id} value={item.id}>
             {item.label}

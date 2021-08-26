@@ -48,16 +48,16 @@ import useAuth from 'src/hooks/useAuth';
 import NavItem from './NavItem';
 
 const sections = [
-  {
-    subheader: 'Reports',
-    items: [
-      {
-        title: 'Dashboard',
-        icon: PieChartIcon,
-        href: '/dashboard',
-      },
-    ],
-  },
+  // {
+  //   subheader: 'Reports',
+  //   items: [
+  //     {
+  //       title: 'Dashboard',
+  //       icon: PieChartIcon,
+  //       href: '/dashboard',
+  //     },
+  //   ],
+  // },
   {
     subheader: 'Management',
     items: [
@@ -67,13 +67,18 @@ const sections = [
         items: [
           {
             title: 'List Projects',
-            icon: listIcon,
+
             href: '/projects',
           },
           {
             title: 'Create Project',
-            icon: addprojectIcon,
+
             href: '/projects/create',
+          },
+          {
+            title: 'Projects Scope',
+
+            href: '/projects/scope',
           },
         ],
       },
@@ -105,6 +110,25 @@ const sections = [
             title: 'Create Customer',
             href: '/customers/create',
           },
+          {
+            title: 'Customers category',
+            href: '/customers/category',
+          },
+        ],
+      },
+      {
+        title: 'Brokers',
+        icon: UsersIcon,
+        href: '/customers',
+        items: [
+          {
+            title: 'List Brokers',
+            href: '/brokers',
+          },
+          {
+            title: 'Create Broker',
+            href: '/brokers/create',
+          },
         ],
       },
       {
@@ -123,6 +147,21 @@ const sections = [
           {
             title: 'Upload Products',
             href: '/products/upload',
+          },
+        ],
+      },
+      {
+        title: 'suppliers',
+        icon: UsersIcon,
+        href: '/suppliers',
+        items: [
+          {
+            title: 'List suppliers',
+            href: '/suppliers',
+          },
+          {
+            title: 'Create supplier',
+            href: '/suppliers/create',
           },
         ],
       },

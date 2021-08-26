@@ -25,7 +25,6 @@ function FormCheckbox({ name, label = '', errorObj = {}, ...props }) {
     field: { ref, value, onChange, ...inputProps },
   } = useController({
     name,
-    control,
   });
   const { isError, errorMessage } = errorHandler(name, errorObj);
 

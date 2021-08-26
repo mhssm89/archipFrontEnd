@@ -10,7 +10,7 @@ import * as yup from 'yup';
 /// make a request to get all the customers
 // using auto complete to fill the customer name
 import FormAsyncAutocomplete from 'src/components/controls/FormAsyncAutocomplete';
-
+import PoqAutocomplete from 'src/components/controls/PoqAutocomplete';
 const useStyles = makeStyles(() => ({
   root: {},
   buttonreset: {
@@ -21,15 +21,17 @@ const useStyles = makeStyles(() => ({
 
 const validationSchema = yup.object().shape({
   poqnumber: yup.number().required('Required.'),
+  poqname: yup.object(),
 });
 
-function PoqSearchForm({ className, customer, ...rest }) {
+function PoqSearchForm({ className, customer, onChange, ...rest }) {
   const classes = useStyles();
   const methods = useForm({
     mode: 'all',
     resolver: yupResolver(validationSchema),
     defaultValues: {
       poqnumber: '',
+      poqname: null,
     },
   });
   const {
@@ -37,12 +39,13 @@ function PoqSearchForm({ className, customer, ...rest }) {
     errors,
     setError,
     reset,
+    getValues,
     formState: { isSubmitting },
   } = methods;
   const onSubmit = async (data) => {
     try {
       // NOTE: Make API request
-      console.log(data);
+      onChange(getValues('poqname'));
       reset();
     } catch (err) {
       console.error(err);
@@ -52,16 +55,16 @@ function PoqSearchForm({ className, customer, ...rest }) {
       });
     }
   };
-
+  onChange(getValues('poqname'));
   return (
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className={clsx(classes.root, className)}
         {...rest}>
-        <FormAsyncAutocomplete
-          label="Product Name"
-          name="productname"
+        <PoqAutocomplete
+          label="BOQ #"
+          name="poqname"
           margin="normal"
           variant="outlined"
           errorObj={errors}

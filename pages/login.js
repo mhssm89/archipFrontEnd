@@ -32,7 +32,6 @@ const LOGIN = gql`
       jwt
       user {
         id
-        name
         username
         email
         role {

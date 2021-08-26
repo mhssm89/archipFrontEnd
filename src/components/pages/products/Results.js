@@ -18,6 +18,9 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Grid,
+  Button,
+  Dialog,
 } from '@material-ui/core';
 
 import clsx from 'clsx';
@@ -25,23 +28,49 @@ import { useSnackbar } from 'notistack';
 import {
   ArrowRight as ArrowRightIcon,
   Edit as EditIcon,
+  Trash as TrashIcon,
   Search as SearchIcon,
 } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { FormProvider, useForm } from 'react-hook-form';
+import FormSelect from '../../controls/FormSelect';
+import FormInput from 'src/components/controls/FormInput';
 import Link from 'src/components/common/Link';
 import useTable from 'src/hooks/useTable';
-
+import axios from 'axios';
 import BulkOperations from './BulkOperations';
+import DeleteDialoge from '../../controls/DeleteDialoug';
 
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-function Results({ className, query, ...rest }) {
+const validationSchema = yup.object().shape({
+  filter: yup
+    .object()
+    .shape({ label: yup.string(), id: yup.string() })
+    .nullable(),
+  search: yup.string(),
+});
+
+const filterOptions = [
+  { label: 'Part Name', id: 'partName' },
+  { label: 'Part Number', id: 'partNumber' },
+  { label: 'Brand', id: 'brand' },
+  { label: 'Status', id: 'partStatus' },
+  { label: 'Price', id: 'price' },
+  { label: 'Supplier Name', id: 'supplier.supplierName' },
+];
+
+function Results({ className, query, setquery, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
+  const [OpenDeleteDialoge, setOpenDeleteDialoge] = React.useState(false);
+  const [deleteItem, setDeleteItem] = React.useState({});
+
   const {
     // items,
     selectedItems,
@@ -61,42 +90,79 @@ function Results({ className, query, ...rest }) {
     handleLimitChange,
   } = useTable({ query });
 
-  const items = [
-    {
-      id: 1,
-      partNo: '123456',
-      partName: 'sensore',
-      partBrand: 'honeywell',
-      price: '100',
-      discount: '5',
-      partdescription: 'this is desc.',
-      partdatasheet: 'link',
-      partstatus: ' expired',
-      priceUpdatedOn: '01-01-2021',
+  const methods = useForm({
+    mode: 'all',
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      filter: filterOptions[0],
+      search: '',
     },
-  ];
+  });
+  const {
+    handleSubmit,
+    errors,
+    setError,
+    setValue,
+    reset,
+    watch,
+    formState: { isSubmitting },
+  } = methods;
 
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
-        <Box p={2}>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SvgIcon fontSize="small" color="action">
-                    <SearchIcon />
-                  </SvgIcon>
-                </InputAdornment>
-              ),
-            }}
-            style={{ width: '25%' }}
-            onChange={() => {}}
-            placeholder="Search Products"
-            value=""
-            variant="outlined"
-          />
-        </Box>
+        <FormProvider {...methods}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className={clsx(classes.root, className)}
+            {...rest}>
+            <Grid
+              container
+              spacing={3}
+              alignItems={'center'}
+              style={{ paddingTop: '1rem', margin: 'auto' }}>
+              <Grid item xs={4}>
+                <FormSelect
+                  options={filterOptions}
+                  name="filter"
+                  label="Filter"
+                  variant="outlined"
+                  setValue={setValue}
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={4} xs={6}>
+                <FormInput
+                  name="search"
+                  label="Search"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleSubmit(onSubmit)}>
+                  Search
+                </Button>
+                <Button
+                  variant="outlined"
+                  type="button"
+                  color="secondary"
+                  style={{ marginLeft: '1rem' }}
+                  disabled={isSubmitting}
+                  onClick={() => {
+                    resetFilter();
+                  }}>
+                  reset
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        </FormProvider>
         <Divider />
         <PerfectScrollbar>
           <Box minWidth={700}>
@@ -113,12 +179,12 @@ function Results({ className, query, ...rest }) {
                   <TableCell>Part #</TableCell>
                   <TableCell>Part Name</TableCell>
                   <TableCell>Brand</TableCell>
-                  <TableCell>Price (EGP)</TableCell>
+                  <TableCell>Price</TableCell>
+                  <TableCell>currency</TableCell>
                   <TableCell>Discount (%)</TableCell>
                   <TableCell>Part desc.</TableCell>
                   <TableCell>Part Data sheet</TableCell>
-                  <TableCell>Part Status</TableCell>
-                  <TableCell>Price Last Update</TableCell>
+                  <TableCell>supplier</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -128,7 +194,7 @@ function Results({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.map((item) => {
                     const isItemSelected = selectedItems.includes(item.id);
 
                     return (
@@ -145,16 +211,27 @@ function Results({ className, query, ...rest }) {
                             value={isItemSelected}
                           />
                         </TableCell>
-                        <TableCell>{item.partNo}</TableCell>
+                        <TableCell>{item.partNumber}</TableCell>
                         <TableCell>{item.partName}</TableCell>
-                        <TableCell>{item.partBrand}</TableCell>
+                        <TableCell>{item.brand}</TableCell>
                         <TableCell>{item.price}</TableCell>
+                        <TableCell>{item.currency['name']}</TableCell>
                         <TableCell>{item.discount}</TableCell>
-                        <TableCell>{item.partdescription}</TableCell>
+                        <TableCell>{item.desc}</TableCell>
                         <TableCell>{item.partdatasheet}</TableCell>
-                        <TableCell>{item.partstatus}</TableCell>
-                        <TableCell>{item.priceUpdatedOn}</TableCell>
+                        <TableCell>{item.supplier['supplierName']}</TableCell>
                         <TableCell align="right">
+                          <IconButton
+                            onClick={() =>
+                              handelDialog({
+                                id: item.id,
+                                name: item.partNumber,
+                              })
+                            }>
+                            <SvgIcon fontSize="small">
+                              <TrashIcon />
+                            </SvgIcon>
+                          </IconButton>
                           <IconButton
                             component={Link}
                             href={`/products/${item.id}/edit`}>
@@ -189,8 +266,8 @@ function Results({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.length == 0) return '0-0';
+            return `${from}-${from + query.length - 1}`;
           }}
         />
       </Card>
@@ -202,8 +279,75 @@ function Results({ className, query, ...rest }) {
         onMarkInactive={() => {}}
         onDelete={() => {}}
       />
+      <Dialog open={OpenDeleteDialoge}>
+        <DeleteDialoge
+          setOpenDialoge={setOpenDeleteDialoge}
+          deletedValue={deleteItem.name}
+          runFunction={deleteproduct}
+        />
+      </Dialog>
     </div>
   );
+
+  async function resetFilter() {
+    try {
+      axios
+        .get('http://localhost:1337/products?_where[isDeleted]=0')
+        .then((res) => {
+          setquery(res.data);
+        });
+    } catch {
+      (err) => {
+        console.log(err);
+      };
+    }
+  }
+  async function onSubmit({ filter, search }) {
+    try {
+      // Reset submitError message
+      setValue('submitError', '');
+
+      //   status: status ? 'ACTIVE' : 'INACTIVE',
+      // };
+      axios
+        .get(
+          `http://localhost:1337/products?_where[${filter.id}_contains]=${search}&[isDeleted]=0`,
+        )
+        .then((res) => {
+          console.log(res.data);
+          setquery(res.data);
+          enqueueSnackbar('Filter applied', {
+            variant: 'success',
+          });
+        })
+        .catch((err) => {
+          enqueueSnackbar('Error in filtering', { variant: 'error' });
+          console.log(err);
+        });
+    } catch (err) {
+      // Show error message
+      enqueueSnackbar('Error in filtering', { variant: 'error' });
+      console.log(err);
+
+      // Show submitError message
+      setError('submitError', {
+        type: 'submit',
+        message: 'Error creating new product.',
+      });
+    }
+  }
+  function handelDialog(product) {
+    setOpenDeleteDialoge(true);
+    setDeleteItem(product);
+  }
+
+  async function deleteproduct() {
+    axios
+      .put(`http://localhost:1337/products/${deleteItem.id}`, { isDeleted: 1 })
+      .then((deletedItem) => {
+        setquery(query.filter((item) => item.id != deleteItem.id));
+      });
+  }
 }
 
 export default Results;

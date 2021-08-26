@@ -21,6 +21,7 @@ import {
 
 import clsx from 'clsx';
 import PoqSearchForm from 'src/components/pages/projects/create/PoqSearchForm';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -36,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Poqdetail({
   className,
+  handlePoq,
   onBack = () => {},
   onNext = () => {},
   ...rest
@@ -43,13 +45,19 @@ function Poqdetail({
   const classes = useStyles();
   const [isSubmitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState(null);
+  const [poq, setPoq] = React.useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
       setSubmitting(true);
-
+      if (poq) {
+        const response = await axios.get(
+          `http://localhost:1337/poqdetails?_where[poq]=${poq.id}`,
+        );
+        handlePoq(poq);
+      }
       // NOTE: Make API request
 
       if (onNext) {
@@ -62,45 +70,45 @@ function Poqdetail({
       setSubmitting(false);
     }
   };
-
+  console.log(poq);
   return (
     <form
       onSubmit={handleSubmit}
       className={clsx(classes.root, className)}
       {...rest}>
-      <Grid container spacing={2} >
+      <Grid container spacing={2}>
         <Grid item xs={8}>
           <Typography variant="h3" mb={3}>
-            Select P.O.Q
+            Select B.O.Q
           </Typography>
         </Grid>
-        <Grid item xs={8} >
-          <PoqSearchForm />
+        <Grid item xs={8}>
+          <PoqSearchForm onChange={setPoq} />
         </Grid>
         <Grid item xs={6}>
           <Card>
-            <CardHeader title="P.O.Q Summery"/>
-              <Divider />
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>
-                      Customer Name
-                    </TableCell>
-                    <TableCell>
-                      AAA
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>
-                      Total Cost
-                    </TableCell>
-                    <TableCell>
-                      52,000
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
+            <CardHeader title="P.O.Q Summery" />
+            <Divider />
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell>Customer Name</TableCell>
+                  {poq ? (
+                    <TableCell>{poq.customer}</TableCell>
+                  ) : (
+                    <TableCell> - </TableCell>
+                  )}
+                </TableRow>
+                <TableRow>
+                  <TableCell>Total Cost</TableCell>
+                  {poq ? (
+                    <TableCell>{poq.grandtotal}</TableCell>
+                  ) : (
+                    <TableCell>0.00</TableCell>
+                  )}
+                </TableRow>
+              </TableBody>
+            </Table>
           </Card>
         </Grid>
       </Grid>
@@ -116,14 +124,25 @@ function Poqdetail({
           </Button>
         )}
         <Box flexGrow={1} />
-        <Button
-          color="secondary"
-          disabled={isSubmitting}
-          type="submit" // to be removed 
-          variant="contained"
-          size="large">
-          Next
-        </Button>
+        {poq ? (
+          <Button
+            color="secondary"
+            disabled={isSubmitting}
+            type="submit" // to be removed
+            variant="contained"
+            size="large">
+            Next
+          </Button>
+        ) : (
+          <Button
+            color="secondary"
+            disabled={true}
+            type="submit" // to be removed
+            variant="contained"
+            size="large">
+            Next
+          </Button>
+        )}
       </Box>
     </form>
   );

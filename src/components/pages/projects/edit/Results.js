@@ -28,12 +28,13 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import useTable from 'src/hooks/useTable';
 
 import BulkOperations from './BulkOperations';
+import axios from 'axios';
 
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-function Results({ className, query, ...rest }) {
+function Results({ className, query, setproject, transferRate, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
@@ -55,31 +56,7 @@ function Results({ className, query, ...rest }) {
     handlePageChange,
     handleLimitChange,
   } = useTable({ query });
-
-  const items = [
-    {
-      id: 1,
-      partNo: '123456',
-      quantity: 15,
-      price: '100',
-      discount: '5',
-    },
-    {
-      id: 2,
-      partNo: '789101',
-      quantity: 20,
-      price: '30',
-      discount: '10',
-    },
-    {
-      id: 3,
-      partNo: '65489',
-      quantity: 100,
-      price: '12',
-      discount: '3',
-    },
-  ];
-
+  // console.log(query, 'query from result ');
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
@@ -97,8 +74,11 @@ function Results({ className, query, ...rest }) {
                   </TableCell>
                   <TableCell>Part #</TableCell>
                   <TableCell>Quantity</TableCell>
-                  <TableCell>Price (EGP)</TableCell>
+                  <TableCell>Price </TableCell>
+                  <TableCell>Currency</TableCell>
                   <TableCell>Discount (%)</TableCell>
+                  <TableCell>Sale Percentage (%)</TableCell>
+                  <TableCell>Sale price </TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -108,7 +88,7 @@ function Results({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.projectdetail.map((item) => {
                     const isItemSelected = selectedItems.includes(item.id);
 
                     return (
@@ -125,12 +105,80 @@ function Results({ className, query, ...rest }) {
                             value={isItemSelected}
                           />
                         </TableCell>
-                        <TableCell>{item.partNo}</TableCell>
-                        <TableCell>{item.quantity}</TableCell>
-                        <TableCell>{item.price}</TableCell>
-                        <TableCell>{item.discount}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>
+                          {item.product.partNumber}
+                        </TableCell>
+                        <TableCell style={{ width: '10%' }}>
+                          <TextField
+                            type="number"
+                            name={`qnty${item.id}`}
+                            variant="outlined"
+                            value={item.qnty}
+                            style={{ textAlign: 'center' }}
+                            onChange={(e) => {
+                              item.qnty = Number(e.target.value);
+                              setproject({ ...query });
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>{item.EndUserPrice}</TableCell>
+                        <TableCell>
+                          {(() => {
+                            switch (item.product.currency) {
+                              case 1:
+                                return 'EGP';
+                              case 2:
+                                return 'USD';
+                              case 3:
+                                return 'EUR';
+                            }
+                          })()}
+                        </TableCell>
+
+                        <TableCell>{item.product.discount}</TableCell>
+                        <TableCell style={{ width: '20%' }}>
+                          <TextField
+                            type="number"
+                            name={`salepercent${item.id}`}
+                            variant="outlined"
+                            value={item.saleprecentage}
+                            style={{ width: '60%' }}
+                            onChange={(e) => {
+                              item.SalePrice =
+                                (item.EndUserPrice * Number(e.target.value)) /
+                                  100 +
+                                item.EndUserPrice;
+                              item.saleprecentage = Number(e.target.value);
+                              setproject({ ...query });
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {/* {item.SalePrice
+                            ? Math.round(
+                                (item.SalePrice + Number.EPSILON) * 100,
+                              ) / 100
+                            : item.EndUserPrice} */}
+                          {(() => {
+                            if (item.saleprice) {
+                              if (item.product.currency == 2) {
+                                return item.SalePrice * transferRate.usd;
+                              }
+                              if (item.product.currency == 3) {
+                                return item.SalePrice * transferRate.eur;
+                              }
+                            } else {
+                              if (item.product.currency == 2) {
+                                return item.EndUserPrice * transferRate.usd;
+                              }
+                              if (item.product.currency == 3) {
+                                return item.EndUserPrice * transferRate.eur;
+                              }
+                            }
+                          })()}
+                        </TableCell>
                         <TableCell align="right">
-                          <IconButton onClick={() => {}}>
+                          <IconButton onClick={() => deleteProduct(item.id)}>
                             <SvgIcon fontSize="small">
                               <TrashIcon />
                             </SvgIcon>
@@ -155,8 +203,8 @@ function Results({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.length == 0) return '0-0';
+            return `${from}-${from + query.length - 1}`;
           }}
         />
       </Card>
@@ -170,6 +218,19 @@ function Results({ className, query, ...rest }) {
       />
     </div>
   );
+  function deleteProduct(productId) {
+    axios
+      .delete(`http://localhost:1337/project-details/${productId}`)
+      .then(() => {
+        setproject({
+          ...query,
+          projectdetail: query.projectdetail.filter(
+            (item) => item.id != productId,
+          ),
+        });
+        enqueueSnackbar('deleted', { variant: 'error' });
+      });
+  }
 }
 
 export default Results;

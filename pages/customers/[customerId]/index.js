@@ -1,17 +1,14 @@
 import React from 'react';
 
-import {
-  Box,
-  Container,
-  makeStyles,
-} 
-from '@material-ui/core';
+import { Box, Container, makeStyles } from '@material-ui/core';
 import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
 import Details from 'src/components/pages/customers/customer/Details';
 import Header from 'src/components/common/Header';
 import useIsMountedRef from 'src/hooks/useIsMountedRef';
 import DashboardLayout from 'src/layouts/DashboardLayout';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,45 +20,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const headerLinks = [
-    { title: 'Management', href: '#' },
-    { title: 'Customers', href: '/customers' },
-    { title: 'View' },
-  ];
+  { title: 'Management', href: '#' },
+  { title: 'Customers', href: '/customers' },
+  { title: 'View' },
+];
 
 function CustomerViewPage() {
   const classes = useStyles();
   const isMountedRef = useIsMountedRef();
-  // const router = useRouter();
+  const router = useRouter();
   const [customer, setCustomer] = React.useState(null);
 
   const getCustomer = React.useCallback(async () => {
     try {
       // Get customerId
-      // const { customerId } = router.query;
-
-      const data = {
-        customer: {
-          id: '5e86805e2bafd54f66cc95c3',
-          address1: 'Street John Wick, no. 7',
-          address2: 'House #25',
-          balance: 0,
-          city: 'San Diego',
-          country: 'USA',
-          creditCard: '**** **** **** **** 4142',
-          currency: '$',
-          email: 'adam.denisov@devias.io',
-          hasDiscountedPrices: false,
-          isVerified: true,
-          name: 'Adam Denisov',
-          phone: '+55 748 327 439',
-          state: 'New York',
-          vatRate: 19,
-          zipCode: '240355',
-        },
-      };
+      const customerId = router.query;
+      const res = await axios.get(
+        'http://localhost:1337/customers/' + customerId.customerId,
+      );
+      setCustomer(res.data);
 
       if (isMountedRef.current) {
-        setCustomer(data.customer);
+        setCustomer(res.data);
       }
     } catch (err) {
       console.error(err);
@@ -79,9 +59,9 @@ function CustomerViewPage() {
   return (
     <Page className={classes.root} title="Customer Details">
       <Container maxWidth={false}>
-      <Header links={headerLinks} mainText="View Customer" />
+        <Header links={headerLinks} mainText="View Customer" />
         <Box mt={3}>
-           <Details customer={customer} />
+          <Details customer={customer} />
         </Box>
       </Container>
     </Page>

@@ -10,7 +10,7 @@ import * as yup from 'yup';
 import FormDatePicker from 'src/components/controls/FormDatePicker';
 import FormInput from 'src/components/controls/FormInput';
 import FormAutocomplete from 'src/components/controls/FormAutocomplete';
-
+import ProjectScopeAutoComplete from 'src/components/controls/ProjectScopeAutoComplete';
 const useStyles = makeStyles((theme) => ({
   root: {},
 
@@ -30,14 +30,15 @@ const projectStatus = [
   { label: 'Finished', value: 'Finished' },
 ];
 
-const projectscope = [
-  { label: 'Personal', value: 'Personal' },
-  { label: 'Commercial', value: 'Commercial' },
-  { label: 'Industrial', value: 'Industrial' },
-];
+// const projectscope = [
+//   { label: 'Personal', value: 'Personal' },
+//   { label: 'Commercial', value: 'Commercial' },
+//   { label: 'Industrial', value: 'Industrial' },
+// ];
 
 function Projectdetail({
   className,
+  handleProject,
   onBack = () => {},
   onNext = () => {},
   ...rest
@@ -63,10 +64,7 @@ function Projectdetail({
   } = methods;
   const onSubmit = async (data) => {
     try {
-      // Call API to store step data in server session
-      // It is important to have it on server to be able to reuse it if user
-      // decides to continue later.
-      console.log(data);
+      handleProject(data);
       if (onNext) {
         onNext();
       }
@@ -106,11 +104,10 @@ function Projectdetail({
             />
           </Box>
           <Box mt={4}>
-            <FormAutocomplete
+            <ProjectScopeAutoComplete
               name="ProjectScope"
               label="Project Scope"
               variant="outlined"
-              options={projectscope}
               errorObj={errors}
             />
           </Box>

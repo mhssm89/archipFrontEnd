@@ -7,7 +7,6 @@ import clsx from 'clsx';
 import CustomerInfo from './CustomerInfo';
 
 import CustomerProjectdetail from './CustomerProjectdetail';
-import Results from './Results';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -26,8 +25,7 @@ function Details({ customer, className, ...rest }) {
         <CustomerInfo customer={customer} />
       </Grid>
       <Grid item lg={8} md={6} xl={9} xs={12}>
-        {/* <CustomerProjectdetail customer={customer} /> */}
-        <Results />
+        <CustomerProjectdetail />
       </Grid>
     </Grid>
   );

@@ -58,12 +58,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function FilesDropzone({ className, ...rest }) {
+function FilesDropzone({ onChange, className, ...rest }) {
   const classes = useStyles();
   const [files, setFiles] = React.useState([]);
 
   const handleDrop = React.useCallback((acceptedFiles) => {
     setFiles((prevFiles) => [...prevFiles].concat(acceptedFiles));
+    acceptedFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const x = reader.result;
+        onChange(x);
+      };
+      reader.readAsArrayBuffer(file);
+    });
   }, []);
 
   const handleRemoveAll = () => {
@@ -75,6 +83,8 @@ function FilesDropzone({ className, ...rest }) {
     multiple: false,
     accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
+
+  const processfile = () => {};
 
   return (
     <div className={clsx(classes.root, className)} {...rest}>

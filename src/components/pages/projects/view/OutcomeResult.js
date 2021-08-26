@@ -4,87 +4,82 @@ import {
   Box,
   Card,
   CardHeader,
-  Checkbox,
   CircularProgress,
   Divider,
-  IconButton,
-  InputAdornment,
   makeStyles,
-  SvgIcon,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
+  Typography,
 } from '@material-ui/core';
 
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
-import {
-  ArrowRight as ArrowRightIcon,
-  Edit as EditIcon,
-  Search as SearchIcon,
-  Trash as TrashIcon,
-} from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import Link from 'src/components/common/Link';
-
+import { useRouter } from 'next/router';
+import axios from 'axios';
 import useTable from 'src/hooks/useTable';
 
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-function OutcomeResult({ className, query, ...rest }) {
+function OutcomeResult({ className, setotalutcome, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
+  const [transaction, setTransaction] = React.useState([]);
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
   const {
-    // items,
-    selectedItems,
-    isAllItemsSelected,
-    isSomeItemsSelected,
     page,
     limit,
     hasNext,
     hasPrev,
     isLoading: isTableLoading,
-    setItems,
-    setSelectedItems,
-    enableBulkOperations,
-    handleSelectAllItems,
-    handleSelectOneItem,
     handlePageChange,
     handleLimitChange,
-  } = useTable({ query });
+  } = useTable({ transaction });
 
-  const items = [
-    {
-      id: '0',
-      date: '15/10/2019',
-      amount: '90000',
-    },
-    {
-      id: '2',
-      date: '4/8/2018',
-      amount: '1000',
-    },
-  ];
+  const projectId = router.query['projectId'];
+  React.useEffect(() => {
+    if (projectId) {
+      fetchTransaction();
+    }
+  }, [projectId]);
 
-  return (
+  async function fetchTransaction() {
+    try {
+      if (!projectId) return;
+      const res = await axios.get(
+        `http://localhost:1337/transactions?_where[type]=out&[project]=${projectId}`,
+      );
+      setTransaction(res.data);
+      var total = 0;
+      res.data.map((item) => {
+        total = total + item.amount;
+        return total;
+      });
+      setotalutcome(total);
+    } catch (err) {
+      enqueueSnackbar(`error ${err}`, { variant: 'error' });
+    }
+  }
+  return transaction ? (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
-        <CardHeader title="Outcome payment" />
+        <CardHeader title="Outcome payment" style={{ background: '#CDDCE3' }} />
         <Divider />
         <PerfectScrollbar>
           <Box minWidth={700}>
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell>Serial</TableCell>
                   <TableCell>Date</TableCell>
-                  <TableCell>Amount (EGP)</TableCell>
+                  <TableCell>Amount </TableCell>
                 </TableRow>
               </TableHead>
               {isTableLoading ? (
@@ -93,9 +88,10 @@ function OutcomeResult({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {transaction.map((item) => {
                     return (
                       <TableRow hover key={item.id}>
+                        <TableCell>{item.id}</TableCell>
                         <TableCell>{item.date}</TableCell>
                         <TableCell>{item.amount}</TableCell>
                       </TableRow>
@@ -117,12 +113,14 @@ function OutcomeResult({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (transaction.length == 0) return '0-0';
+            return `${from}-${from + transaction.length - 1}`;
           }}
         />
       </Card>
     </div>
+  ) : (
+    <Typography>waiting</Typography>
   );
 }
 

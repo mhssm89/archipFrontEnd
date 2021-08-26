@@ -18,6 +18,7 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Dialog,
 } from '@material-ui/core';
 
 import clsx from 'clsx';
@@ -26,6 +27,8 @@ import { Search as SearchIcon, Trash as TrashIcon } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import useTable from 'src/hooks/useTable';
+import Poqdetail from '../../projects/create/Poqdetail';
+import axios from 'axios';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -34,6 +37,7 @@ const useStyles = makeStyles(() => ({
 function Results({ className, query, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
   const {
     // items,
@@ -54,30 +58,32 @@ function Results({ className, query, ...rest }) {
     handleLimitChange,
   } = useTable({ query });
 
-  const items = [
-    {
-      id: 1,
-      partNo: '123456',
-      quantity: 15,
-      price: '100',
-      discount: '5',
-    },
-    {
-      id: 2,
-      partNo: '789101',
-      quantity: 20,
-      price: '30',
-      discount: '10',
-    },
-    {
-      id: 3,
-      partNo: '65489',
-      quantity: 100,
-      price: '12',
-      discount: '3',
-    },
-  ];
-
+  // const items = [
+  //   {
+  //     id: 1,
+  //     partNumber: '123456',
+  //     partName: 'test',
+  //     qnty: 15,
+  //     saleprice: '100',
+  //     discount: '5',
+  //   },
+  //   {
+  //     id: 2,
+  //     partNumber: '789101',
+  //     partName: 'test',
+  //     qnty: 20,
+  //     saleprice: '30',
+  //     discount: '10',
+  //   },
+  //   {
+  //     id: 3,
+  //     partNumber: '65489',
+  //     partName: 'test',
+  //     qnty: 100,
+  //     saleprice: '12',
+  //     discount: '3',
+  //   },
+  //];
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
@@ -89,9 +95,9 @@ function Results({ className, query, ...rest }) {
               <TableHead>
                 <TableRow>
                   <TableCell>Part #</TableCell>
+                  <TableCell>Part Name</TableCell>
                   <TableCell>Quantity</TableCell>
-                  <TableCell>Price (EGP)</TableCell>
-                  <TableCell>Discount (%)</TableCell>
+                  <TableCell>Sale Price </TableCell>
                 </TableRow>
               </TableHead>
               {isTableLoading ? (
@@ -100,13 +106,13 @@ function Results({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.map((item) => {
                     return (
                       <TableRow hover key={item.id}>
-                        <TableCell>{item.partNo}</TableCell>
-                        <TableCell>{item.quantity}</TableCell>
-                        <TableCell>{item.price}</TableCell>
-                        <TableCell>{item.discount}</TableCell>
+                        <TableCell>{item.product['partNumber']}</TableCell>
+                        <TableCell>{item.product['partName']}</TableCell>
+                        <TableCell>{item.qnty}</TableCell>
+                        <TableCell>{item.saleprice}</TableCell>
                       </TableRow>
                     );
                   })}
@@ -126,8 +132,8 @@ function Results({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.length == 0) return '0-0';
+            return `${from}-${from + query.length - 1}`;
           }}
         />
       </Card>

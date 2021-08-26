@@ -17,7 +17,13 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Grid,
+  Button,
+  Dialog,
 } from '@material-ui/core';
+
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
@@ -25,34 +31,45 @@ import {
   ArrowRight as ArrowRightIcon,
   Edit as EditIcon,
   Search as SearchIcon,
+  Trash as TrashIcon,
 } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-
 import Label from 'src/components/common/Label';
 import Link from 'src/components/common/Link';
 import useTable from 'src/hooks/useTable';
-
 import BulkOperations from './BulkOperations';
-
+import { FormProvider, useForm } from 'react-hook-form';
+import FormSelect from '../../controls/FormSelect';
+import FormInput from 'src/components/controls/FormInput';
+import DeleteDialoge from '../../controls/DeleteDialoug';
+import axios from 'axios';
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
+const validationSchema = yup.object().shape({
+  filter: yup
+    .object()
+    .shape({ label: yup.string(), id: yup.string() })
+    .nullable(),
+  search: yup.string(),
+});
+
 const getStatusLabel = (projectStatus) => {
   const map = {
-    negotiation: {
+    Negotiation: {
       text: 'Negotiation',
       color: 'error',
     },
-    signed: {
+    Signed: {
       text: 'Signed',
       color: 'secondary',
     },
-    inprogress: {
+    Inprogress: {
       text: 'InProgress',
       color: 'warning',
     },
-    finished: {
+    Finished: {
       text: 'Finished',
       color: 'success',
     },
@@ -62,10 +79,18 @@ const getStatusLabel = (projectStatus) => {
 
   return <Label color={color}>{text}</Label>;
 };
+const filterOptions = [
+  { label: 'Name', id: 'name' },
+  { label: 'Customer', id: 'customer.firstName' },
+  { label: 'Status', id: 'status' },
+  { label: 'Scope', id: 'scope' },
+];
 
-function Results({ className, query, ...rest }) {
+function Results({ className, query, setquery, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const [OpenDeleteDialoge, setOpenDeleteDialoge] = React.useState(false);
+  const [deleteItem, setDeleteItem] = React.useState({});
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
   const {
     // items,
@@ -77,7 +102,7 @@ function Results({ className, query, ...rest }) {
     hasNext,
     hasPrev,
     isLoading: isTableLoading,
-    setItems,
+    // setItems,
     setSelectedItems,
     enableBulkOperations,
     handleSelectAllItems,
@@ -86,66 +111,79 @@ function Results({ className, query, ...rest }) {
     handleLimitChange,
   } = useTable({ query });
 
-  const items = [
-    {
-      id: 1,
-      projectName: 'Project 1',
-      customerName: 'Mohamed Hossam',
-      status: 'negotiation',
-      scope: 'commercial',
-      startDate: '01-01-2021',
-      endDate: '01-01-2021',
+  const methods = useForm({
+    mode: 'all',
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      filter: filterOptions[0],
+      search: '',
     },
-    {
-      id: 1,
-      projectName: 'Project 2',
-      customerName: 'Mohamed Hossam',
-      status: 'signed',
-      scope: 'commercial',
-      startDate: '01-01-2021',
-      endDate: '01-01-2021',
-    },
-    {
-      id: 1,
-      projectName: 'Project 3',
-      customerName: 'Mohamed Hossam',
-      status: 'inprogress',
-      scope: 'commercial',
-      startDate: '01-01-2021',
-      endDate: '01-01-2021',
-    },
-    {
-      id: 1,
-      projectName: 'Project 4',
-      customerName: 'Mohamed Hossam',
-      status: 'finished',
-      scope: 'commercial',
-      startDate: '01-01-2021',
-      endDate: '01-01-2021',
-    },
-  ];
+  });
+  const {
+    handleSubmit,
+    errors,
+    setError,
+    setValue,
+    reset,
+    watch,
+    formState: { isSubmitting },
+  } = methods;
 
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
-        <Box p={2}>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SvgIcon fontSize="small" color="action">
-                    <SearchIcon />
-                  </SvgIcon>
-                </InputAdornment>
-              ),
-            }}
-            style={{ width: '25%' }}
-            onChange={() => {}}
-            placeholder="Search Projects"
-            value=""
-            variant="outlined"
-          />
-        </Box>
+        <FormProvider {...methods}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className={clsx(classes.root, className)}
+            {...rest}>
+            <Grid
+              container
+              spacing={3}
+              alignItems={'center'}
+              style={{ paddingTop: '1rem', margin: 'auto' }}>
+              <Grid item xs={4}>
+                <FormSelect
+                  options={filterOptions}
+                  name="filter"
+                  label="Filter"
+                  variant="outlined"
+                  setValue={setValue}
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={4} xs={6}>
+                <FormInput
+                  name="search"
+                  label="Search"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleSubmit(onSubmit)}>
+                  Search
+                </Button>
+                <Button
+                  variant="outlined"
+                  type="button"
+                  color="secondary"
+                  style={{ marginLeft: '1rem' }}
+                  disabled={isSubmitting}
+                  onClick={() => {
+                    resetFilter();
+                  }}>
+                  reset
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        </FormProvider>
         <Divider />
         <PerfectScrollbar>
           <Box minWidth={700}>
@@ -174,46 +212,62 @@ function Results({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.map((item) => {
                     const isItemSelected = selectedItems.includes(item.id);
 
                     return (
-                      <TableRow
-                        hover
-                        key={item.id}
-                        selected={selectedItems.indexOf(item.id) !== -1}>
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={isItemSelected}
-                            onChange={(event) =>
-                              handleSelectOneItem(event, item.id)
-                            }
-                            value={isItemSelected}
-                          />
-                        </TableCell>
-                        <TableCell>{item.projectName}</TableCell>
-                        <TableCell>{item.customerName}</TableCell>
-                        <TableCell>{getStatusLabel(item.status)}</TableCell>
-                        <TableCell>{item.scope}</TableCell>
-                        <TableCell>{item.startDate}</TableCell>
-                        <TableCell>{item.endDate}</TableCell>
-                        <TableCell align="right">
-                          <IconButton
-                            component={Link}
-                            href={`/projects/${item.id}/edit`}>
-                            <SvgIcon fontSize="small">
-                              <EditIcon />
-                            </SvgIcon>
-                          </IconButton>
-                          <IconButton
-                            component={Link}
-                            href={`/projects/${item.id}`}>
-                            <SvgIcon fontSize="small">
-                              <ArrowRightIcon />
-                            </SvgIcon>
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
+                      <>
+                        <TableRow
+                          hover
+                          key={item.id}
+                          selected={selectedItems.indexOf(item.id) !== -1}>
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={isItemSelected}
+                              onChange={(event) =>
+                                handleSelectOneItem(event, item.id)
+                              }
+                              value={isItemSelected}
+                            />
+                          </TableCell>
+                          <TableCell>{item.name}</TableCell>
+                          <TableCell>
+                            {item.customer.firstName} {item.customer.lastName}
+                          </TableCell>
+
+                          {/* <TableCell>{getStatusLabel(item.status)}</TableCell> */}
+
+                          <TableCell>{item.status}</TableCell>
+
+                          <TableCell>{item.project_scope.scope}</TableCell>
+                          <TableCell>{item.startDate}</TableCell>
+                          <TableCell>{item.endDate}</TableCell>
+                          <TableCell align="right">
+                            <IconButton
+                              onClick={() =>
+                                handelDialog({ id: item.id, name: item.name })
+                              }>
+                              <SvgIcon fontSize="small">
+                                <TrashIcon />
+                              </SvgIcon>
+                            </IconButton>
+                            <IconButton
+                              component={Link}
+                              href={`/projects/${item.id}/edit`}>
+                              <SvgIcon fontSize="small">
+                                <EditIcon />
+                              </SvgIcon>
+                            </IconButton>
+                            <IconButton
+                              component={Link}
+                              href={`/projects/${item.id}`}>
+                              <SvgIcon fontSize="small">
+                                <ArrowRightIcon />
+                              </SvgIcon>
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      </>
                     );
                   })}
                 </TableBody>
@@ -232,8 +286,8 @@ function Results({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.length == 0) return '0-0';
+            return `${from}-${from + query.length - 1}`;
           }}
         />
       </Card>
@@ -245,8 +299,75 @@ function Results({ className, query, ...rest }) {
         onMarkInactive={() => {}}
         onDelete={() => {}}
       />
+      <Dialog open={OpenDeleteDialoge}>
+        <DeleteDialoge
+          setOpenDialoge={setOpenDeleteDialoge}
+          deletedValue={deleteItem.name}
+          runFunction={deleteProject}
+        />
+      </Dialog>
     </div>
   );
+  async function resetFilter() {
+    try {
+      axios
+        .get('http://localhost:1337/projects?_where[isDeleted]=0')
+        .then((res) => {
+          setquery(res.data);
+        });
+    } catch {
+      (err) => {
+        console.log(err);
+      };
+    }
+  }
+  async function onSubmit({ filter, search }) {
+    try {
+      // Reset submitError message
+      setValue('submitError', '');
+
+      //   status: status ? 'ACTIVE' : 'INACTIVE',
+      // };
+      axios
+        .get(
+          `http://localhost:1337/projects?_where[${filter.id}]=${search}&[isDeleted]=0`,
+        )
+        .then((res) => {
+          console.log(res.data);
+          setquery(res.data);
+          enqueueSnackbar('Filter applied', {
+            variant: 'success',
+          });
+        })
+        .catch((err) => {
+          enqueueSnackbar('Error in filtering', { variant: 'error' });
+          console.log(err);
+        });
+    } catch (err) {
+      // Show error message
+      enqueueSnackbar('Error in filtering', { variant: 'error' });
+      console.log(err);
+
+      // Show submitError message
+      setError('submitError', {
+        type: 'submit',
+        message: 'Error creating new product.',
+      });
+    }
+  }
+
+  function handelDialog(project) {
+    setOpenDeleteDialoge(true);
+    setDeleteItem(project);
+  }
+
+  async function deleteProject() {
+    axios
+      .put(`http://localhost:1337/projects/${deleteItem.id}`, { isDeleted: 1 })
+      .then((deletedItem) => {
+        setquery(query.filter((item) => item.id != deleteItem.id));
+      });
+  }
 }
 
 export default Results;

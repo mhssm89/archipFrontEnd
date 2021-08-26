@@ -18,6 +18,9 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Grid,
+  Dialog,
+  Button,
 } from '@material-ui/core';
 
 import clsx from 'clsx';
@@ -25,23 +28,47 @@ import { useSnackbar } from 'notistack';
 import {
   ArrowRight as ArrowRightIcon,
   Edit as EditIcon,
+  Trash as TrashIcon,
   Search as SearchIcon,
 } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import Link from 'src/components/common/Link';
 import useTable from 'src/hooks/useTable';
 
 import BulkOperations from './BulkOperations';
-
+import { FormProvider, useForm } from 'react-hook-form';
+import FormSelect from '../../controls/FormSelect';
+import FormInput from 'src/components/controls/FormInput';
+import axios from 'axios';
+import DeleteDialoge from '../../controls/DeleteDialoug';
 const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-function Results({ className, query, ...rest }) {
+const validationSchema = yup.object().shape({
+  filter: yup
+    .object()
+    .shape({ label: yup.string(), id: yup.string() })
+    .nullable(),
+  search: yup.string(),
+});
+
+const filterOptions = [
+  { label: 'Number', id: 'id' },
+  { label: 'Customer', id: 'customer.firstName' },
+  { label: 'Grand Total', id: 'grandTotal' },
+];
+// id, grandTotal, totalDiscount, profit;
+function Results({ className, query, setquery, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
+  const [OpenDeleteDialoge, setOpenDeleteDialoge] = React.useState(false);
+  const [deleteItem, setDeleteItem] = React.useState({});
+
   const {
     // items,
     selectedItems,
@@ -61,37 +88,79 @@ function Results({ className, query, ...rest }) {
     handleLimitChange,
   } = useTable({ query });
 
-  const items = [
-    {
-      id: 1,
-      number: '12345',
-      customerName: 'Mohamed Hossam',
-      expiresOn: '01-01-2021',
-      totalCost: 10000,
+  const methods = useForm({
+    mode: 'all',
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      filter: filterOptions[0],
+      search: '',
     },
-  ];
+  });
+  const {
+    handleSubmit,
+    errors,
+    setError,
+    setValue,
+    reset,
+    watch,
+    formState: { isSubmitting },
+  } = methods;
 
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
-        <Box p={2}>
-          <TextField
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SvgIcon fontSize="small" color="action">
-                    <SearchIcon />
-                  </SvgIcon>
-                </InputAdornment>
-              ),
-            }}
-            style={{ width: '25%' }}
-            onChange={() => {}}
-            placeholder="Search POQs"
-            value=""
-            variant="outlined"
-          />
-        </Box>
+        <FormProvider {...methods}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className={clsx(classes.root, className)}
+            {...rest}>
+            <Grid
+              container
+              spacing={3}
+              alignItems={'center'}
+              style={{ paddingTop: '1rem', margin: 'auto' }}>
+              <Grid item xs={4}>
+                <FormSelect
+                  options={filterOptions}
+                  name="filter"
+                  label="Filter"
+                  variant="outlined"
+                  setValue={setValue}
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={4} xs={6}>
+                <FormInput
+                  name="search"
+                  label="Search"
+                  variant="outlined"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleSubmit(onSubmit)}>
+                  Search
+                </Button>
+                <Button
+                  variant="outlined"
+                  type="button"
+                  color="secondary"
+                  style={{ marginLeft: '1rem' }}
+                  disabled={isSubmitting}
+                  onClick={() => {
+                    resetFilter();
+                  }}>
+                  reset
+                </Button>
+              </Grid>
+            </Grid>
+          </form>
+        </FormProvider>
         <Divider />
         <PerfectScrollbar>
           <Box minWidth={700}>
@@ -118,7 +187,7 @@ function Results({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.map((item) => {
                     const isItemSelected = selectedItems.includes(item.id);
 
                     return (
@@ -135,11 +204,31 @@ function Results({ className, query, ...rest }) {
                             value={isItemSelected}
                           />
                         </TableCell>
-                        <TableCell>{item.number}</TableCell>
-                        <TableCell>{item.customerName}</TableCell>
-                        <TableCell>{item.expiresOn}</TableCell>
-                        <TableCell>{item.totalCost}</TableCell>
+                        <TableCell>{item.id}- Archip</TableCell>
+                        {item.customer ? (
+                          <TableCell>
+                            {item.customer['firstName'] +
+                              ' ' +
+                              item.customer['lastName']}
+                          </TableCell>
+                        ) : (
+                          <TableCell>NA</TableCell>
+                        )}
+                        <TableCell>{item.endDate}</TableCell>
+                        <TableCell>{item.grandTotal}</TableCell>
+
                         <TableCell align="right">
+                          <IconButton
+                            onClick={() =>
+                              handelDialog({
+                                id: item.id,
+                                name: `${item.id}- Archip BOQ`,
+                              })
+                            }>
+                            <SvgIcon fontSize="small">
+                              <TrashIcon />
+                            </SvgIcon>
+                          </IconButton>
                           <IconButton
                             component={Link}
                             href={`/poqs/${item.id}/edit`}>
@@ -174,8 +263,8 @@ function Results({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.length == 0) return '0-0';
+            return `${from}-${from + query.length - 1}`;
           }}
         />
       </Card>
@@ -187,8 +276,74 @@ function Results({ className, query, ...rest }) {
         onMarkInactive={() => {}}
         onDelete={() => {}}
       />
+      <Dialog open={OpenDeleteDialoge}>
+        <DeleteDialoge
+          setOpenDialoge={setOpenDeleteDialoge}
+          deletedValue={deleteItem.name}
+          runFunction={deletepoq}
+        />
+      </Dialog>
     </div>
   );
+  async function resetFilter() {
+    try {
+      axios
+        .get('http://localhost:1337/poqs?_where[isDeleted]=0')
+        .then((res) => {
+          setquery(res.data);
+        });
+    } catch {
+      (err) => {
+        console.log(err);
+      };
+    }
+  }
+  async function onSubmit({ filter, search }) {
+    try {
+      // Reset submitError message
+      setValue('submitError', '');
+
+      //   status: status ? 'ACTIVE' : 'INACTIVE',
+      // };
+      axios
+        .get(
+          `http://localhost:1337/poqs?_where[${filter.id}]=${search}&[isDeleted]=0`,
+        )
+        .then((res) => {
+          console.log(res.data);
+          setquery(res.data);
+          enqueueSnackbar('Filter applied', {
+            variant: 'success',
+          });
+        })
+        .catch((err) => {
+          enqueueSnackbar('Error in filtering', { variant: 'error' });
+          console.log(err);
+        });
+    } catch (err) {
+      // Show error message
+      enqueueSnackbar('Error in filtering', { variant: 'error' });
+      console.log(err);
+
+      // Show submitError message
+      setError('submitError', {
+        type: 'submit',
+        message: 'Error in filtering',
+      });
+    }
+  }
+  function handelDialog(poq) {
+    setOpenDeleteDialoge(true);
+    setDeleteItem(poq);
+  }
+
+  async function deletepoq() {
+    axios
+      .put(`http://localhost:1337/poqs/${deleteItem.id}`, { isDeleted: 1 })
+      .then((deletedItem) => {
+        setquery(query.filter((item) => item.id != deleteItem.id));
+      });
+  }
 }
 
 export default Results;

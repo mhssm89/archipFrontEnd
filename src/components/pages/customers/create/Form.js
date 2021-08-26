@@ -9,6 +9,7 @@ import {
   FormHelperText,
   Grid,
   makeStyles,
+  Checkbox,
 } from '@material-ui/core';
 
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,9 +17,11 @@ import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
-
+import Label from 'src/components/common/Label';
 import FormInput from 'src/components/controls/FormInput';
-import FormAutocomplete from 'src/components/controls/FormAutocomplete';
+import CustomerCatAuto from 'src/components/controls/CustomerCategoryAuto';
+import BrokerAutocomplete from 'src/components/controls/BrokerAutocomplete';
+import axios from 'axios';
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -30,20 +33,17 @@ const validationSchema = yup.object().shape({
   company: yup.string().max(255).required('Required.'),
   position: yup.string().max(255),
   email: yup.string().email('Invalid email.').max(255).required('Required.'),
-  mobilePhone: yup.string().min(11).max(11).required('Required.'),
-  businessPhone1: yup.string(),
-  category: yup.string(),
+  phonenumber: yup.string(),
+  category: yup.object().nullable().required(),
   address: yup.string().max(255),
+  broker: yup.object().nullable(),
 });
-
-const gategorylist = [
-  { label: 'Business ', value: 'Business' },
-  { label: 'individual', value: 'individual' },
-];
 
 function Form({ className, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const [BrokerStatus, setBrokerStatus] = React.useState(false);
+  const [fields, setFields] = React.useState([{ value: null }]);
   const methods = useForm({
     mode: 'all',
     resolver: yupResolver(validationSchema),
@@ -53,11 +53,11 @@ function Form({ className, ...rest }) {
       company: '',
       position: '',
       email: '',
-      mobilePhone: '',
-      businessPhone1: '',
+      phonenumber: '',
       category: '',
       address: '',
       submitError: '',
+      broker: '',
     },
   });
   const {
@@ -66,8 +66,27 @@ function Form({ className, ...rest }) {
     setError,
     setValue,
     reset,
+    getValues,
     formState: { isSubmitting },
   } = methods;
+
+  function handleChange(i, event) {
+    const values = [...fields];
+    values[i].value = event.target.value;
+    setFields(values);
+  }
+
+  function handleAdd() {
+    const values = [...fields];
+    values.push({ value: null });
+    setFields(values);
+  }
+
+  function handleRemove(i) {
+    const values = [...fields];
+    values.splice(i, 1);
+    setFields(values);
+  }
 
   return (
     <FormProvider {...methods}>
@@ -78,6 +97,30 @@ function Form({ className, ...rest }) {
         <Card>
           <CardContent>
             <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <Label label="Broker" variant="outlined" errorObj={errors}>
+                  Broker
+                </Label>
+                <Checkbox
+                  checked={BrokerStatus}
+                  onChange={() => {
+                    handelcheckbox();
+                  }}
+                />
+              </Grid>
+              {BrokerStatus && (
+                <Grid item lg={12} spacing={6}>
+                  <Grid item md={6} xs={12}>
+                    <BrokerAutocomplete
+                      name="broker"
+                      label="Broker"
+                      variant="outlined"
+                      errorObj={errors}
+                    />
+                  </Grid>
+                </Grid>
+              )}
+
               <Grid item md={6} xs={12}>
                 <FormInput
                   name="firstName"
@@ -118,31 +161,53 @@ function Form({ className, ...rest }) {
                   errorObj={errors}
                 />
               </Grid>
+
               <Grid item md={6} xs={12}>
-                <FormInput
-                  name="mobilePhone"
-                  label="Phone Number"
-                  variant="outlined"
-                  errorObj={errors}
-                />
-              </Grid>
-              <Grid item md={6} xs={12}>
-                <FormInput
-                  name="businessPhone1"
-                  label="Business Phone Number 1"
-                  variant="outlined"
-                  errorObj={errors}
-                />
-              </Grid>
-              <Grid item md={6} xs={12}>
-                <FormAutocomplete
+                <CustomerCatAuto
                   name="category"
                   label="Category"
                   variant="outlined"
-                  options={gategorylist}
                   errorObj={errors}
                 />
               </Grid>
+
+              {fields.map((field, idx) => {
+                return (
+                  <>
+                    <Grid container spacing={3} item md={8} xs={12}>
+                      <Grid item xs={10}>
+                        <FormInput
+                          name="phonenumber"
+                          label="Phone Number"
+                          variant="outlined"
+                          value={field.value || ''}
+                          onChange={(e) => handleChange(idx, e)}
+                          errorObj={errors}
+                        />
+                      </Grid>
+                      <Grid item md={2} xs={2}>
+                        <Button
+                          variant="contained"
+                          color="warning"
+                          onClick={() => handleRemove(idx)}
+                          disabled={fields.length <= 1 ? true : false}>
+                          remove
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </>
+                );
+              })}
+
+              <Grid item md={3} xs={6}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleAdd()}>
+                  +
+                </Button>
+              </Grid>
+
               <Grid item md={12} xs={12}>
                 <FormInput
                   name="address"
@@ -182,11 +247,54 @@ function Form({ className, ...rest }) {
     </FormProvider>
   );
 
+  function handelcheckbox() {
+    setBrokerStatus(!BrokerStatus);
+    setValue('broker', null);
+  }
+
   // ##################################################
-  async function onSubmit({ firstName, lastName }) {
+  async function onSubmit({
+    firstName,
+    lastName,
+    company,
+    position,
+    email,
+    address,
+    category,
+    broker,
+  }) {
     try {
       // Reset submitError message
       setValue('submitError', '');
+
+      const phones = fields.map((item) => {
+        return item.value;
+      });
+      var phone = phones.join(' - ');
+
+      const data = {
+        firstName: firstName,
+        lastName: lastName,
+        companyName: company,
+        position: position,
+        emailaddress: email,
+        phoneNumber: phone,
+        customer_category: category.id,
+        address: address,
+        broker: broker,
+      };
+
+      const response = await axios
+        .post('http://localhost:1337/customers/', data)
+        .then(() => {
+          reset();
+          enqueueSnackbar('Customer created successfully.', {
+            variant: 'success',
+          });
+        })
+        .catch(() => {
+          enqueueSnackbar('Error creating new customer.', { variant: 'error' });
+        });
 
       // Contsruct input
       // const input = {
@@ -201,10 +309,8 @@ function Form({ className, ...rest }) {
       // });
 
       // Reset form
-      reset();
 
       // Show success message
-      enqueueSnackbar('Customer created successfully.', { variant: 'success' });
     } catch (err) {
       // Show error message
       enqueueSnackbar('Error creating new customer.', { variant: 'error' });

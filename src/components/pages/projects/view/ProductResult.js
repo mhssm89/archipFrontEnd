@@ -18,6 +18,7 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Typography,
 } from '@material-ui/core';
 
 import clsx from 'clsx';
@@ -54,34 +55,34 @@ function ProductResult({ className, query, ...rest }) {
     handleLimitChange,
   } = useTable({ query });
 
-  const items = [
-    {
-      id: 1,
-      partNo: '123456',
-      quantity: 15,
-      price: '100',
-      discount: '5',
-    },
-    {
-      id: 2,
-      partNo: '789101',
-      quantity: 20,
-      price: '30',
-      discount: '10',
-    },
-    {
-      id: 3,
-      partNo: '65489',
-      quantity: 100,
-      price: '12',
-      discount: '3',
-    },
-  ];
-
+  // const items = [
+  //   {
+  //     id: 1,
+  //     partNo: '123456',
+  //     quantity: 15,
+  //     price: '100',
+  //     discount: '5',
+  //   },
+  //   {
+  //     id: 2,
+  //     partNo: '789101',
+  //     quantity: 20,
+  //     price: '30',
+  //     discount: '10',
+  //   },
+  //   {
+  //     id: 3,
+  //     partNo: '65489',
+  //     quantity: 100,
+  //     price: '12',
+  //     discount: '3',
+  //   },
+  // ];
+  console.log(query);
   return (
     <div className={clsx(classes.root, className)} {...rest}>
       <Card>
-        <CardHeader title="Products" />
+        <CardHeader title="Products" style={{ background: '#CDDCE3' }} />
         <Divider />
         <PerfectScrollbar>
           <Box minWidth={700}>
@@ -89,9 +90,10 @@ function ProductResult({ className, query, ...rest }) {
               <TableHead>
                 <TableRow>
                   <TableCell>Part #</TableCell>
+                  <TableCell>Part name</TableCell>
+                  <TableCell>Brand</TableCell>
                   <TableCell>Quantity</TableCell>
-                  <TableCell>Price (EGP)</TableCell>
-                  <TableCell>Discount (%)</TableCell>
+                  <TableCell>Price</TableCell>
                 </TableRow>
               </TableHead>
               {isTableLoading ? (
@@ -100,13 +102,14 @@ function ProductResult({ className, query, ...rest }) {
                 </Box>
               ) : (
                 <TableBody>
-                  {items.map((item) => {
+                  {query.map((item) => {
                     return (
                       <TableRow hover key={item.id}>
-                        <TableCell>{item.partNo}</TableCell>
-                        <TableCell>{item.quantity}</TableCell>
-                        <TableCell>{item.price}</TableCell>
-                        <TableCell>{item.discount}</TableCell>
+                        <TableCell>{item.product['partNumber']}</TableCell>
+                        <TableCell>{item.product['partName']}</TableCell>
+                        <TableCell>{item.product['brand']}</TableCell>
+                        <TableCell>{item.qnty}</TableCell>
+                        <TableCell>{item.SalePrice}</TableCell>
                       </TableRow>
                     );
                   })}
@@ -126,8 +129,8 @@ function ProductResult({ className, query, ...rest }) {
           nextIconButtonProps={{ disabled: !hasNext }}
           backIconButtonProps={{ disabled: !hasPrev }}
           labelDisplayedRows={({ from }) => {
-            if (items.length == 0) return '0-0';
-            return `${from}-${from + items.length - 1}`;
+            if (query.length == 0) return '0-0';
+            return `${from}-${from + query.length - 1}`;
           }}
         />
       </Card>

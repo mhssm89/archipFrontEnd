@@ -24,13 +24,19 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackbar } from 'notistack';
 import TransactionResult from './TransactionResult';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import useIsMountedRef from 'src/hooks/useIsMountedRef';
 
 import clsx from 'clsx';
+import { resetWarningCache } from 'prop-types';
+import { values } from 'lodash';
 const validationSchema = yup.object().shape({
   amount: yup.number().required('required'),
   date: yup.date().nullable().typeError('Invalid date.').required('Required.'),
   type: yup.object().nullable().required('Required.'),
   description: yup.string(255),
+  banktransaction: yup.number().nullable(),
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -55,13 +61,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const trasactionoption = [
-  { label: 'Income', value: 'income' },
-  { label: 'OutCome', value: 'outcome' },
+  { label: 'Income', value: 'in' },
+  { label: 'OutCome', value: 'out' },
 ];
 
 function Invoices({ className, ...rest }) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
+  const isMountedRef = useIsMountedRef();
+
+  const [invoices, setInvoices] = React.useState([]);
 
   const methods = useForm({
     mode: 'all',
@@ -76,6 +86,28 @@ function Invoices({ className, ...rest }) {
     reset,
     formState: { isSubmitting },
   } = methods;
+
+  //////////////////////////////////////
+  const getInvoices = React.useCallback(async () => {
+    try {
+      const projectId = router.query['projectId'];
+      const res = await axios.get(
+        `http://localhost:1337/transactions?_where[project]=${projectId}`,
+      );
+      const data = res.data;
+      if (isMountedRef.current) {
+        setInvoices(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [isMountedRef]);
+
+  React.useEffect(() => {
+    getInvoices();
+  }, []);
+
+  /////////////////////////////////////
 
   return (
     <>
@@ -103,7 +135,7 @@ function Invoices({ className, ...rest }) {
                 />
               </Grid>
               {/* transaction type */}
-              <Grid item md={3} xs={12}>
+              <Grid item md={4} xs={12}>
                 <FormAutocomplete
                   name="type"
                   label="Transaction type"
@@ -121,8 +153,17 @@ function Invoices({ className, ...rest }) {
                   errorObj={errors}
                 />
               </Grid>
-
-              <Grid item xs={8}>
+              <Grid item md={4} xs={12}>
+                {/* Add Button */}
+                <FormInput
+                  name="banktransaction"
+                  label="Bank Transaction Number"
+                  variant="outlined"
+                  margin="auto"
+                  errorObj={errors}
+                />
+              </Grid>
+              <Grid item md={4} xs={12}>
                 {/* Add Button */}
                 <FormInput
                   name="description"
@@ -150,31 +191,42 @@ function Invoices({ className, ...rest }) {
       <Card className={clsx(classes.result, className)} {...rest}>
         <CardHeader title="Invoces/Billings" />
         <Divider />
-        <TransactionResult />
+        <TransactionResult query={invoices} setinvoices={setInvoices} />
       </Card>
     </>
   );
-  async function onSubmit(values) {
+  async function onSubmit({
+    amount,
+    date,
+    description,
+    type,
+    banktransaction,
+  }) {
     try {
       // Reset submitError message
       setValue('submitError', '');
+      const projectId = router.query['projectId'];
+      const data = {
+        amount: amount,
+        date: date,
+        bankTransaction: banktransaction,
+        description: description,
+        type: type['value'],
+        project: projectId,
+      };
 
-      console.log(values);
-      // Contsruct input
-      // const input = {
-      //   name,
-      //   status: status ? 'ACTIVE' : 'INACTIVE',
-      // };
-
-      // Remove name.enUS if not set
-      // if (!input.name.enUS) delete input.name.enUS;
-
-      // Make an API request
-
-      // Reset form
-      reset();
+      const res = axios.post('http://localhost:1337/transactions', data);
+      setInvoices([...invoices, (await res).data]);
 
       // Show success message
+      reset({
+        amount: '',
+        date: '',
+        description: '',
+        type: '',
+        banktransaction: '',
+      });
+      reset(values);
       enqueueSnackbar('Transaction Saved', { variant: 'success' });
     } catch (err) {
       // Show error message
