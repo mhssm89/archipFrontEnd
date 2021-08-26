@@ -38,7 +38,7 @@ function CustomerCatAuto({ name, label = '', errorObj = {}, ...props }) {
     setLoading(true);
     // Make an API request
     const response = await axios.get(
-      'http://localhost:1337/customer-categories',
+      `${process.env.NEXT_PUBLIC_BACKENDURL}/customer-categories`,
     );
     setOptions(
       response.data.map((item) => ({

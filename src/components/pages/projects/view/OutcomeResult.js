@@ -54,7 +54,7 @@ function OutcomeResult({ className, setotalutcome, ...rest }) {
     try {
       if (!projectId) return;
       const res = await axios.get(
-        `http://localhost:1337/transactions?_where[type]=out&[project]=${projectId}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/transactions?_where[type]=out&[project]=${projectId}`,
       );
       setTransaction(res.data);
       var total = 0;

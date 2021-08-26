@@ -236,7 +236,10 @@ function Form({ className, customer, ...rest }) {
         broker: broker ? broker.id : null,
       };
       const response = await axios
-        .put('http://localhost:1337/customers/' + customerId, data)
+        .put(
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/customers/${customerId}`,
+          data,
+        )
         .then(() => {
           enqueueSnackbar('Customer created successfully.', {
             variant: 'success',

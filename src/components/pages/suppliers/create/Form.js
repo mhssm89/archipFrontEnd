@@ -198,7 +198,7 @@ function Form({ className, ...rest }) {
         description: description,
       };
       const response = await axios
-        .post('http://localhost:1337/suppliers/', data)
+        .post(`${process.env.NEXT_PUBLIC_BACKENDURL}/suppliers/`, data)
         .then(() => {
           reset();
           setFields([{ value: null }]);

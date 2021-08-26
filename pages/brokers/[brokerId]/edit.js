@@ -61,7 +61,9 @@ function BrokerEditPage() {
     try {
       // Make an API request
       const brokerId = router.query['brokerId'];
-      const res = await axios.get('http://localhost:1337/brokers/' + brokerId);
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/brokers/${brokerId}`,
+      );
       setBroker(res.data);
     } catch (err) {
       enqueueSnackbar('Error has been occurred.', { variant: 'error' });

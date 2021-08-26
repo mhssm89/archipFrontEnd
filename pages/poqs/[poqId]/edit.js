@@ -61,10 +61,12 @@ function POQEditPage() {
   async function fetchPOQ() {
     try {
       if (!poqId) return;
-      const poq = await axios.get('http://localhost:1337/poqs/' + poqId);
+      const poq = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/poqs/${poqId}`,
+      );
       if (poq.status === 200) {
         const poqdetail = await axios.get(
-          'http://localhost:1337/poqdetails?_where[poq]=' + poq.data.id,
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails?_where[poq]=${poq.data.id}`,
         );
         const details = poqdetail.data;
         setAll({ poq: poq.data, poqDetail: details });

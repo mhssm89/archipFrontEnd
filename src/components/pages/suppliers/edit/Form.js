@@ -146,7 +146,10 @@ function Form({ className, supplier, ...rest }) {
       };
 
       const response = await axios
-        .put('http://localhost:1337/suppliers/' + supplierId, data)
+        .put(
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/suppliers/${supplierId}`,
+          data,
+        )
         .then(() => {
           enqueueSnackbar('supplier edit successfully.', {
             variant: 'success',

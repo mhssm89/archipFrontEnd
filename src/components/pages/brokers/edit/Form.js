@@ -184,7 +184,7 @@ function Form({ className, broker, ...rest }) {
       };
       const brokerId = router.query['brokerId'];
       const response = await axios
-        .put('http://localhost:1337/brokers/' + brokerId, data)
+        .put(`${process.env.NEXT_PUBLIC_BACKENDURL}/brokers/${brokerId}`, data)
         .then(() => {
           enqueueSnackbar('Edit complete', {
             variant: 'success',

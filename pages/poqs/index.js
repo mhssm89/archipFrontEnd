@@ -40,7 +40,7 @@ function POQsPage() {
   const getPoqs = React.useCallback(async () => {
     try {
       const res = await axios.get(
-        'http://localhost:1337/poqs/?_where[isDeleted]=0',
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/poqs/?_where[isDeleted]=0`,
       );
       const data = res.data;
       if (isMountedRef.current) {

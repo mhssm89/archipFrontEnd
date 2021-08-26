@@ -71,7 +71,7 @@ function supplierEditPage() {
       // Make an API request
 
       const res = await axios.get(
-        'http://localhost:1337/suppliers/' + supplierId,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/suppliers/${supplierId}`,
       );
       setSupplier(res.data);
       // setSupplier();

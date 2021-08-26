@@ -219,13 +219,15 @@ function Results({ className, query, setPOQ, transferRate, ...rest }) {
 
   //delete product
   function deleteProduct(productId) {
-    axios.delete(`http://localhost:1337/poqdetails/${productId}`).then(() => {
-      setPOQ({
-        ...query,
-        poqDetail: query.poqDetail.filter((item) => item.id != productId),
+    axios
+      .delete(`h${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails/${productId}`)
+      .then(() => {
+        setPOQ({
+          ...query,
+          poqDetail: query.poqDetail.filter((item) => item.id != productId),
+        });
+        enqueueSnackbar('deleted', { variant: 'error' });
       });
-      enqueueSnackbar('deleted', { variant: 'error' });
-    });
   }
 }
 

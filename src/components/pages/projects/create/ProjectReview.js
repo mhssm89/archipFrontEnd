@@ -40,7 +40,7 @@ function ProjectReview({
     try {
       if (projectData) {
         const response = await axios.get(
-          `http://localhost:1337/poqdetails?_where[poq]=${projectData.poq.id}`,
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails?_where[poq]=${projectData.poq.id}`,
         );
         setProducts(response.data);
       }
@@ -126,7 +126,7 @@ function ProjectReview({
       };
 
       axios
-        .post('http://localhost:1337/projects', projectInput)
+        .post(`${process.env.NEXT_PUBLIC_BACKENDURL}/projects`, projectInput)
         .then((resp) => {
           products.map((item) => {
             var projectDetails = {
@@ -138,7 +138,10 @@ function ProjectReview({
               saleprecentage: item.salepercentage,
             };
             axios
-              .post('http://localhost:1337/project-details', projectDetails)
+              .post(
+                `${process.env.NEXT_PUBLIC_BACKENDURL}/project-details`,
+                projectDetails,
+              )
               .catch(() => {
                 enqueueSnackbar('Error creating new Project.', {
                   variant: 'error',

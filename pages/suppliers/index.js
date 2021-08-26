@@ -40,7 +40,7 @@ function SuppliersPage() {
   const getCustomers = React.useCallback(async () => {
     try {
       const res = await axios.get(
-        'http://localhost:1337/suppliers/?_where[isDeleted]=0',
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/suppliers/?_where[isDeleted]=0`,
       );
       const data = res.data;
       // const data = { suppliers: CUSTOMERS };

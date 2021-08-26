@@ -220,7 +220,9 @@ function Results({ className, query, setproject, transferRate, ...rest }) {
   );
   function deleteProduct(productId) {
     axios
-      .delete(`http://localhost:1337/project-details/${productId}`)
+      .delete(
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/project-details/${productId}`,
+      )
       .then(() => {
         setproject({
           ...query,

@@ -52,12 +52,12 @@ function InvoicePage() {
     try {
       const invoiceId = router.query['invoiceId'];
       const res = await axios.get(
-        `http://localhost:1337/transactions/${invoiceId}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/transactions/${invoiceId}`,
       );
       const data = res.data;
       const cutomerid = data.project['customer'];
       const response = await axios.get(
-        `http://localhost:1337/customers/${cutomerid}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/customers/${cutomerid}`,
       );
       setCustomer(response.data);
 

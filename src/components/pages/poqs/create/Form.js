@@ -656,10 +656,13 @@ function Form({ className, ...rest }) {
       console.log(poqInput);
 
       const response = axios
-        .post('http://localhost:1337/poqs', poqInput)
+        .post(`${process.env.NEXT_PUBLIC_BACKENDURL}/poqs`, poqInput)
         .then((res) => {
           const poqName = { Name: `${res.data.id}-Archip` };
-          axios.put(`http://localhost:1337/poqs/${res.data.id}`, poqName);
+          axios.put(
+            `${process.env.NEXT_PUBLIC_BACKENDURL}/poqs/${res.data.id}`,
+            poqName,
+          );
           Promise.all(
             product.map(async (item) => {
               const detailinput = {
@@ -689,7 +692,10 @@ function Form({ className, ...rest }) {
               };
               console.log(detailinput);
               axios
-                .post(`http://localhost:1337/poqdetails`, detailinput)
+                .post(
+                  `${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails`,
+                  detailinput,
+                )
                 .catch((err) => {
                   console.log(err);
                   enqueueSnackbar('Error creating new BOQ.', {

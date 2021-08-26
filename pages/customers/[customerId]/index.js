@@ -36,7 +36,7 @@ function CustomerViewPage() {
       // Get customerId
       const customerId = router.query;
       const res = await axios.get(
-        'http://localhost:1337/customers/' + customerId.customerId,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/customers/${customerId.customerId}`,
       );
       setCustomer(res.data);
 

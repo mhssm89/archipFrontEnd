@@ -286,7 +286,9 @@ function Results({ className, query, setquery, ...rest }) {
   async function resetFilter() {
     try {
       axios
-        .get('http://localhost:1337/customers?_where[isDeleted]=0')
+        .get(
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/customers?_where[isDeleted]=0`,
+        )
         .then((res) => {
           setquery(res.data);
         });
@@ -305,7 +307,7 @@ function Results({ className, query, setquery, ...rest }) {
       // };
       axios
         .get(
-          `http://localhost:1337/customers?_where[${filter.id}_contains]=${search}&[isDeleted]=0`,
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/customers?_where[${filter.id}_contains]=${search}&[isDeleted]=0`,
         )
         .then((res) => {
           console.log(res.data);
@@ -337,7 +339,9 @@ function Results({ className, query, setquery, ...rest }) {
 
   async function deletecustomer() {
     axios
-      .put(`http://localhost:1337/customers/${deleteItem.id}`, { isDeleted: 1 })
+      .put(`${process.env.NEXT_PUBLIC_BACKENDURL}/customers/${deleteItem.id}`, {
+        isDeleted: 1,
+      })
       .then((deletedItem) => {
         setquery(query.filter((item) => item.id != deleteItem.id));
       });

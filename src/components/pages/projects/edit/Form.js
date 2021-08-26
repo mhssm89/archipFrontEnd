@@ -654,12 +654,12 @@ function Form({ className, project, setproject, ...rest }) {
     };
     axios
       .get(
-        `http://localhost:1337/project-details?_where[product]=${newProduct.product}&[project]=${newProduct.project}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/project-details?_where[product]=${newProduct.product}&[project]=${newProduct.project}`,
       )
       .then(async (res) => {
         if (res.data.length === 0) {
           const resp = await axios.post(
-            'http://localhost:1337/project-details',
+            `${process.env.NEXT_PUBLIC_BACKENDURL}/project-details`,
             newProduct,
           );
           setproject({

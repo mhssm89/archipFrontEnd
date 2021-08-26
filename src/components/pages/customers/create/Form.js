@@ -285,7 +285,7 @@ function Form({ className, ...rest }) {
       };
 
       const response = await axios
-        .post('http://localhost:1337/customers/', data)
+        .post(`${process.env.NEXT_PUBLIC_BACKENDURL}/customers/`, data)
         .then(() => {
           reset();
           enqueueSnackbar('Customer created successfully.', {

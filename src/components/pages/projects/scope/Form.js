@@ -62,7 +62,9 @@ function Form({ className, ...rest }) {
 
   const getScope = React.useCallback(async () => {
     try {
-      const res = await axios.get('http://localhost:1337/project-scopes');
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/project-scopes?_where[isDeleted]=0`,
+      );
       const data = res.data;
       if (isMountedRef.current) {
         setScope(data);
@@ -131,7 +133,10 @@ function Form({ className, ...rest }) {
 
       //make  api request :
       const data = { scope: scopeName };
-      const res = axios.post('http://localhost:1337/project-scopes', data);
+      const res = axios.post(
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/project-scopes`,
+        data,
+      );
       setScope([...Scope, (await res).data]);
       reset();
       enqueueSnackbar('Project Scope successfully created', {

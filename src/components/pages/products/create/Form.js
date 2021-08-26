@@ -208,7 +208,7 @@ function Form({ className, ...rest }) {
       //   status: status ? 'ACTIVE' : 'INACTIVE',
       // };
       const resp = await axios
-        .post('http://localhost:1337/products', input)
+        .post(`Currencies/products`, input)
         .then(() => {
           reset();
           enqueueSnackbar('Product created successfully.', {

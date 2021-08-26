@@ -235,7 +235,7 @@ function Form({ className, ...rest }) {
         address: address,
       };
       const response = await axios
-        .post('http://localhost:1337/brokers/', data)
+        .post(`${process.env.NEXT_PUBLIC_BACKENDURL}/brokers/`, data)
         .then(() => {
           reset();
           enqueueSnackbar('Broker created successfully.', {

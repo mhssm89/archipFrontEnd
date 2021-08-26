@@ -49,7 +49,7 @@ function CustomerProjectdetail({ className, ...rest }) {
     try {
       const customerId = router.query['customerId'];
       const res = await axios.get(
-        `http://localhost:1337/projects?_where[customer]=${customerId}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/projects?_where[customer]=${customerId}`,
       );
       const data = res.data;
       setProjects(data);

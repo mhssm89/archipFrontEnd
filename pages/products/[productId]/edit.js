@@ -80,7 +80,7 @@ function ProductEditPage() {
       // Return if not productId
       if (!productId) return;
       const res = await axios.get(
-        `http://localhost:1337/products/${productId}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/products/${productId}`,
       );
       setProduct(res.data);
 

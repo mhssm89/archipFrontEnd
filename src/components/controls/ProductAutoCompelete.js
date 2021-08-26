@@ -38,7 +38,7 @@ function currencyAutocomplete({ name, label = '', errorObj = {}, ...props }) {
     setLoading(true);
     // Make an API request
     const response = await axios.get(
-      'http://localhost:1337/products?_where[isDeleted]=0',
+      `${process.env.NEXT_PUBLIC_BACKENDURL}/products?_where[isDeleted]=0`,
     );
     setOptions(
       response.data.map((item) => ({

@@ -62,7 +62,9 @@ function Form({ className, ...rest }) {
 
   const getCategory = React.useCallback(async () => {
     try {
-      const res = await axios.get('http://localhost:1337/customer-categories');
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/customer-categories?_where[isDeleted]=0`,
+      );
       const data = res.data;
       if (isMountedRef.current) {
         setCategory(data);
@@ -135,7 +137,10 @@ function Form({ className, ...rest }) {
 
       //make  api request :
       const data = { category: categoryName };
-      const res = axios.post('http://localhost:1337/customer-categories', data);
+      const res = axios.post(
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/customer-categories`,
+        data,
+      );
       setCategory([...category, (await res).data]);
       reset();
       enqueueSnackbar('Customer category successfully created', {

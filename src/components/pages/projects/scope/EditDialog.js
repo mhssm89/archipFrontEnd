@@ -125,7 +125,7 @@ function EditDialog({
       //make  api request :
       const data = { scope: ScopeNameEdit };
       const res = axios.put(
-        `http://localhost:1337/project-scopes/${editScope.id}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/project-scopes/${editScope.id}`,
         data,
       );
       setScope([

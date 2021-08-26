@@ -37,7 +37,9 @@ function supplierAutocomplete({ name, label = '', errorObj = {}, ...props }) {
     //if (!value) return;
     setLoading(true);
     // Make an API request
-    const response = await axios.get('http://localhost:1337/suppliers');
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKENDURL}/suppliers`,
+    );
     console.log(response);
     setOptions(
       response.data.map((item) => ({ id: item.id, name: item.supplierName })),

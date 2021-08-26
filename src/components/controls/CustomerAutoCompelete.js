@@ -44,7 +44,7 @@ function CustomerAutoCompelete({
     setLoading(true);
     // Make an API request
     const response = await axios.get(
-      'http://localhost:1337/Customers?_where[isDeleted]=0',
+      `${process.env.NEXT_PUBLIC_BACKENDURL}/Customers?_where[isDeleted]=0`,
     );
 
     setOptions(
@@ -82,7 +82,9 @@ function CustomerAutoCompelete({
             onClick={() => {
               // api call to get all cutomer data
               axios
-                .get(`http://localhost:1337/customers/${option['id']}`)
+                .get(
+                  `${process.env.NEXT_PUBLIC_BACKENDURL}/customers/${option['id']}`,
+                )
                 .then((res) => {
                   // console.log(res.data);
                   setCustomerAddress('shippingAddress', res.data.address);

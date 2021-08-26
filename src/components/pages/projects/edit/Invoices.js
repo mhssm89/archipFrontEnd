@@ -92,7 +92,7 @@ function Invoices({ className, ...rest }) {
     try {
       const projectId = router.query['projectId'];
       const res = await axios.get(
-        `http://localhost:1337/transactions?_where[project]=${projectId}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/transactions?_where[project]=${projectId}`,
       );
       const data = res.data;
       if (isMountedRef.current) {
@@ -215,7 +215,10 @@ function Invoices({ className, ...rest }) {
         project: projectId,
       };
 
-      const res = axios.post('http://localhost:1337/transactions', data);
+      const res = axios.post(
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/transactions`,
+        data,
+      );
       setInvoices([...invoices, (await res).data]);
 
       // Show success message

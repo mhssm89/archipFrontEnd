@@ -212,12 +212,15 @@ function Results({ className, supplier, query, currency, ...rest }) {
         newProducts.map(async (newproduct) => {
           await axios
             .get(
-              `http://localhost:1337/products?_where[supplier]=${supplier.id}&[partNumber]=${newproduct.partNumber}&[isDelted]=0&_limit=-1`,
+              `${process.env.NEXT_PUBLIC_BACKENDURL}/products?_where[supplier]=${supplier.id}&[partNumber]=${newproduct.partNumber}&[isDelted]=0&_limit=-1`,
             )
             .then(async (checkExsistResponse) => {
               if (checkExsistResponse.data.length == 0) {
                 const addnewPart = await axios
-                  .post(`http://localhost:1337/products/`, newproduct)
+                  .post(
+                    `${process.env.NEXT_PUBLIC_BACKENDURL}/products/`,
+                    newproduct,
+                  )
                   .catch((err) => {
                     console.log(err);
                   });
@@ -225,7 +228,7 @@ function Results({ className, supplier, query, currency, ...rest }) {
                 // change is active to exsist parts to 0
                 await axios
                   .put(
-                    `http://localhost:1337/products/${checkExsistResponse.data[0].id}`,
+                    `${process.env.NEXT_PUBLIC_BACKENDURL}/products/${checkExsistResponse.data[0].id}`,
                     updateIsActive,
                   )
                   // archive all exsistence product
@@ -241,7 +244,7 @@ function Results({ className, supplier, query, currency, ...rest }) {
                     };
                     await axios
                       .post(
-                        `http://localhost:1337/products-archives/`,
+                        `${process.env.NEXT_PUBLIC_BACKENDURL}/products-archives/`,
                         archiveInput,
                       )
                       .catch((err) => {
@@ -254,7 +257,7 @@ function Results({ className, supplier, query, currency, ...rest }) {
                 // update the product with the new info
                 const updatedparts = await axios
                   .put(
-                    `http://localhost:1337/products/${checkExsistResponse.data[0].id}`,
+                    `${process.env.NEXT_PUBLIC_BACKENDURL}/products/${checkExsistResponse.data[0].id}`,
                     newproduct,
                   )
                   .catch((err) => {
@@ -271,7 +274,9 @@ function Results({ className, supplier, query, currency, ...rest }) {
       //// check for any remaning items not updated in the new pricelist
       await axios
         .get(
-          `http://localhost:1337/products/?_where[isActive]=${0}&[supplier]=${
+          `${
+            process.env.NEXT_PUBLIC_BACKENDURL
+          }/products/?_where[isActive]=${0}&[supplier]=${
             supplier.id
           }&[isDeleted]=0&_limit=-1`,
         )
@@ -290,17 +295,20 @@ function Results({ className, supplier, query, currency, ...rest }) {
                 };
                 await axios
                   .post(
-                    `http://localhost:1337/products-archives/`,
+                    `${process.env.NEXT_PUBLIC_BACKENDURL}/products-archives/`,
                     archiveInput,
                   )
                   .catch((err) => {
                     console.log(err);
                   });
                 await axios
-                  .put(`http://localhost:1337/products/${item.id}`, {
-                    isActive: 0,
-                    isDeleted: 1,
-                  })
+                  .put(
+                    `${process.env.NEXT_PUBLIC_BACKENDURL}/products/${item.id}`,
+                    {
+                      isActive: 0,
+                      isDeleted: 1,
+                    },
+                  )
                   .catch((err) => {
                     console.log(err);
                   });

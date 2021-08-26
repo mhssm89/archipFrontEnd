@@ -65,7 +65,7 @@ function CustomerEditPage() {
       // Make an API request
 
       const res = await axios.get(
-        'http://localhost:1337/customers/' + customerId,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/customers/${customerId}`,
       );
       setCustomer(res.data);
       // setCustomer();

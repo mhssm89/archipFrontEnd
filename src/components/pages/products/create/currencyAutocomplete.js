@@ -37,8 +37,9 @@ function currencyAutocomplete({ name, label = '', errorObj = {}, ...props }) {
     //if (!value) return;
     setLoading(true);
     // Make an API request
-    const response = await axios.get('http://localhost:1337/Currencies');
-    console.log(response);
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKENDURL}/Currencies`,
+    );
     setOptions(response.data.map((item) => ({ id: item.id, name: item.name })));
     setLoading(false);
   }

@@ -591,12 +591,12 @@ function Form({ className, poq, setPOQ, ...rest }) {
     };
     axios
       .get(
-        `http://localhost:1337/poqdetails?_where[product]=${newProduct.product}&[poq]=${newProduct.poq}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails?_where[product]=${newProduct.product}&[poq]=${newProduct.poq}`,
       )
       .then(async (res) => {
         if (res.data.length === 0) {
           const resp = await axios.post(
-            'http://localhost:1337/poqdetails',
+            `${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails`,
             newProduct,
           );
 
@@ -634,7 +634,10 @@ function Form({ className, poq, setPOQ, ...rest }) {
         euroTransferRate: transferRate.eur,
       };
       const response = axios
-        .put(`http://localhost:1337/poqs/${poq.poq.id}`, poqInput)
+        .put(
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/poqs/${poq.poq.id}`,
+          poqInput,
+        )
         .then((res) => {
           Promise.all(
             poq.poqDetail.map(async (item) => {
@@ -655,7 +658,7 @@ function Form({ className, poq, setPOQ, ...rest }) {
                 })(),
               };
               const detailresp = await axios.put(
-                `http://localhost:1337/poqdetails/${item.id}`,
+                `${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails/${item.id}`,
                 detailimput,
               );
             }),

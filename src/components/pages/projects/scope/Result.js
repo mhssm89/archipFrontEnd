@@ -194,10 +194,14 @@ function Results({ className, query, setScope, setvalue, ...rest }) {
   );
 
   function deleteScope(scopeID) {
-    axios.delete(`http://localhost:1337/project-scopes/${scopeID}`).then(() => {
-      setScope([...query.filter((item) => item.id != scopeID)]);
-      enqueueSnackbar('deleted', { variant: 'error' });
-    });
+    axios
+      .put(`${process.env.NEXT_PUBLIC_BACKENDURL}/project-scopes/${scopeID}`, {
+        isDeleted: 1,
+      })
+      .then(() => {
+        setScope([...query.filter((item) => item.id != scopeID)]);
+        enqueueSnackbar('deleted', { variant: 'error' });
+      });
   }
 }
 

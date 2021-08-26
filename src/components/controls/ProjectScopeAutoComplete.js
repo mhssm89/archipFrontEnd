@@ -37,7 +37,9 @@ function ProjectScopeAuto({ name, label = '', errorObj = {}, ...props }) {
     //if (!value) return;
     setLoading(true);
     // Make an API request
-    const response = await axios.get('http://localhost:1337/project-scopes');
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKENDURL}/project-scopes`,
+    );
     setOptions(
       response.data.map((item) => ({
         id: item.id,

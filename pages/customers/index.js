@@ -34,7 +34,7 @@ function CustomersPage() {
   const getCustomers = React.useCallback(async () => {
     try {
       const res = await axios.get(
-        'http://localhost:1337/customers/?_where[isDeleted]=0',
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/customers/?_where[isDeleted]=0`,
       );
       const data = res.data;
       if (isMountedRef.current) {

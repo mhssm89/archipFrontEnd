@@ -125,7 +125,7 @@ function EditDialog({
       //make  api request :
       const data = { category: CategoryNameEdit };
       const res = axios.put(
-        `http://localhost:1337/customer-categories/${editCategory.id}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/customer-categories/${editCategory.id}`,
         data,
       );
       setCategory([

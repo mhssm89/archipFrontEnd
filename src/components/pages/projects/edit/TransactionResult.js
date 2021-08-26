@@ -238,7 +238,7 @@ function TransactionType({ className, query, setinvoices, ...rest }) {
   );
   function deleteInvoice(invoiceID) {
     axios
-      .delete(`http://localhost:1337/transactions/${invoiceID}`)
+      .delete(`${process.env.NEXT_PUBLIC_BACKENDURL}/transactions/${invoiceID}`)
       .then(() => {
         setinvoices([...query.filter((item) => item.id != invoiceID)]);
         enqueueSnackbar('Invoice has been deleted', {

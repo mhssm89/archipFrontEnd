@@ -104,12 +104,12 @@ function ProjectEditPage() {
     try {
       if (!projectId) return;
       const res = await axios.get(
-        `http://localhost:1337/projects/${projectId}`,
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/projects/${projectId}`,
       );
 
       if (res.status === 200) {
         const details = await axios.get(
-          `http://localhost:1337/project-details?_where[project]=${res.data.id}`,
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/project-details?_where[project]=${res.data.id}`,
         );
         const projectDetails = details.data;
         setProject({ project: res.data, projectdetail: projectDetails });

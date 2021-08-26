@@ -195,7 +195,10 @@ function Results({ className, query, setCategory, setvalue, ...rest }) {
 
   function deleteCategory(categoryID) {
     axios
-      .delete(`http://localhost:1337/customer-categories/${categoryID}`)
+      .put(
+        `${process.env.NEXT_PUBLIC_BACKENDURL}/customer-categories/${categoryID}`,
+        { isDeleted: 1 },
+      )
       .then(() => {
         setCategory([...query.filter((item) => item.id != categoryID)]);
         enqueueSnackbar('deleted', { variant: 'error' });

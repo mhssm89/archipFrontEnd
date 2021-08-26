@@ -54,7 +54,7 @@ function Poqdetail({
       setSubmitting(true);
       if (poq) {
         const response = await axios.get(
-          `http://localhost:1337/poqdetails?_where[poq]=${poq.id}`,
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails?_where[poq]=${poq.id}`,
         );
         handlePoq(poq);
       }
