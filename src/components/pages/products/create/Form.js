@@ -208,7 +208,7 @@ function Form({ className, ...rest }) {
       //   status: status ? 'ACTIVE' : 'INACTIVE',
       // };
       const resp = await axios
-        .post(`Currencies/products`, input)
+        .post(`${process.env.NEXT_PUBLIC_BACKENDURL}/products`, input)
         .then(() => {
           reset();
           enqueueSnackbar('Product created successfully.', {
