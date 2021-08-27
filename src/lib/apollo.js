@@ -3,7 +3,8 @@ import { setContext } from '@apollo/client/link/context';
 import { withApollo } from 'next-apollo';
 
 const httpLink = createHttpLink({
-  uri: `${process.env.NEXT_PUBLIC_BACKENDURL}graphql`,
+  //uri: `${process.env.NEXT_PUBLIC_BACKENDURL}/graphql`,
+  uri: `https://dry-journey-56904.herokuapp.com/graphql`,
 });
 
 const authLink = setContext((_, { headers }) => {
