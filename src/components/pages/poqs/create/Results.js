@@ -140,17 +140,25 @@ function Results({ className, query, setproduct, transferRate, ...rest }) {
                           {(() => {
                             if (item.saleprice) {
                               if (item.currency['name'] === 'USD') {
-                                return item.saleprice * transferRate.usd;
+                                return (
+                                  item.saleprice * transferRate.usd * item.qnty
+                                );
                               }
                               if (item.currency['name'] === 'EUR') {
-                                return item.saleprice * transferRate.eur;
+                                return (
+                                  item.saleprice * transferRate.eur * item.qnty
+                                );
                               }
                             } else {
                               if (item.currency['name'] === 'USD') {
-                                return item.price * transferRate.usd;
+                                return (
+                                  item.price * transferRate.usd * item.qnty
+                                );
                               }
                               if (item.currency['name'] === 'EUR') {
-                                return item.price * transferRate.eur;
+                                return (
+                                  item.price * transferRate.eur * item.qnty
+                                );
                               }
                             }
                           })()}

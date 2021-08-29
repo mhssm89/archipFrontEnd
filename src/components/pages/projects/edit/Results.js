@@ -162,14 +162,22 @@ function Results({ className, query, setproject, transferRate, ...rest }) {
                           {(() => {
                             if (item.saleprice) {
                               if (item.product.currency == 2) {
-                                return item.SalePrice * transferRate.usd;
+                                return (
+                                  item.SalePrice * transferRate.usd * item.qnty
+                                );
                               }
                               if (item.product.currency == 3) {
-                                return item.SalePrice * transferRate.eur;
+                                return (
+                                  item.SalePrice * transferRate.eur * item.qnty
+                                );
                               }
                             } else {
                               if (item.product.currency == 2) {
-                                return item.EndUserPrice * transferRate.usd;
+                                return (
+                                  item.EndUserPrice *
+                                  transferRate.usd *
+                                  item.qnty
+                                );
                               }
                               if (item.product.currency == 3) {
                                 return item.EndUserPrice * transferRate.eur;

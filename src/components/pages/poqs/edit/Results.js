@@ -171,7 +171,7 @@ function Results({ className, query, setPOQ, transferRate, ...rest }) {
                               }
                             }
                           })()} */}
-                          {item.saleprice}
+                          {item.saleprice * item.qnty}
                         </TableCell>
                         <TableCell align="right">
                           <IconButton onClick={() => deleteProduct(item.id)}>

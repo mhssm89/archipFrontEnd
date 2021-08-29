@@ -49,7 +49,7 @@ function POQViewPage() {
       );
       if (poq.status === 200) {
         const poqdetail = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails?_where[poq]={poq.data.id}`,
+          `${process.env.NEXT_PUBLIC_BACKENDURL}/poqdetails?_where[poq]=${poq.data.id}`,
         );
         const details = poqdetail.data;
         setAll({ poq: poq.data, poqDetail: details });
