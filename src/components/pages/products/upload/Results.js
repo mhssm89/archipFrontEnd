@@ -212,7 +212,7 @@ function Results({ className, supplier, query, currency, ...rest }) {
         newProducts.map(async (newproduct) => {
           await axios
             .get(
-              `${process.env.NEXT_PUBLIC_BACKENDURL}/products?_where[supplier]=${supplier.id}&[partNumber]=${newproduct.partNumber}&_limit=-1`,
+              `${process.env.NEXT_PUBLIC_BACKENDURL}/products?_where[supplier]=${supplier.id}&[partNumber]=${newproduct.partNumber}&[isDeleted]=0&_limit=-1`,
             )
             .then(async (checkExsistResponse) => {
               if (checkExsistResponse.data.length == 0) {
