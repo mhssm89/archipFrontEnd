@@ -75,7 +75,7 @@ function LoginPage() {
 
   React.useEffect(() => {
     // If user already logged in
-    if (isAuthenticated) router.push('/dashboard');
+    if (isAuthenticated) router.push('/projects');
   }, []);
 
   const methods = useForm({
@@ -182,7 +182,7 @@ function LoginPage() {
       });
 
       loginDispatch(data.login.jwt, data.login.user, () =>
-        router.push('/dashboard'),
+        router.push('/projects'),
       );
     } catch (err) {
       // Show submitError message

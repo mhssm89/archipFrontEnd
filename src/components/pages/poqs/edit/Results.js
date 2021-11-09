@@ -154,24 +154,19 @@ function Results({ className, query, setPOQ, transferRate, ...rest }) {
                         <TableCell>
                           {/* {Math.round((item.saleprice + Number.EPSILON) * 100) /
                             100} */}
-                          {/* {(() => {
-                            if (item.saleprice) {
-                              if (item.product.currency == 2) {
-                                return item.saleprice * transferRate.usd;
-                              }
-                              if (item.product.currency == 3) {
-                                return item.saleprice * transferRate.eur;
-                              }
-                            } else {
-                              if (item.product.currency == 2) {
-                                return item.enduserprice * transferRate.usd;
-                              }
-                              if (item.product.currency == 3) {
-                                return item.enduserprice * transferRate.eur;
-                              }
+                          {(() => {
+                            if (item.product.currency == 2) {
+                              return (
+                                item.enduserprice * transferRate.usd * item.qnty
+                              );
                             }
-                          })()} */}
-                          {item.saleprice * item.qnty}
+                            if (item.product.currency == 3) {
+                              return (
+                                item.enduserprice * transferRate.eur * item.qnty
+                              );
+                            }
+                          })()}
+                          {/* {item.saleprice * item.qnty} */}
                         </TableCell>
                         <TableCell align="right">
                           <IconButton onClick={() => deleteProduct(item.id)}>

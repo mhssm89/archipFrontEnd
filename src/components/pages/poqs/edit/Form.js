@@ -76,6 +76,7 @@ const validationSchema = yup.object().shape({
   upponComission: yup.number().required('Required.'),
   dollar: yup.number().nullable(),
   euro: yup.number().nullable(),
+  software: yup.number().nullable(),
 });
 
 function Form({ className, poq, setPOQ, ...rest }) {
@@ -121,6 +122,7 @@ function Form({ className, poq, setPOQ, ...rest }) {
       upponComission: poq.poq.upponComission || 10,
       dollar: poq.poq.dollarTransferRate || 1,
       euro: poq.poq.euroTransferRate || 1,
+      software: poq.poq.software,
     },
   });
   const {
@@ -171,7 +173,7 @@ function Form({ className, poq, setPOQ, ...rest }) {
   React.useEffect(() => {
     // productsTotalCost();
   }, []);
-
+  console.log(transferRate);
   return (
     <FormProvider {...methods}>
       <form
@@ -240,6 +242,26 @@ function Form({ className, poq, setPOQ, ...rest }) {
 
             <Box mt={3}>
               <Card>
+                <CardHeader title="Software" />
+                <Divider />
+                <CardContent>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={12}>
+                      <FormInput
+                        name="software"
+                        label="Software development"
+                        type="number"
+                        variant="outlined"
+                        errorObj={errors}
+                      />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Box>
+
+            <Box mt={3}>
+              <Card>
                 <CardHeader title="Others" />
                 <Divider />
                 <CardContent>
@@ -304,6 +326,16 @@ function Form({ className, poq, setPOQ, ...rest }) {
                         <Typography>
                           {Math.round((productsCost + Number.EPSILON) * 100) /
                             100}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} md={6}>
+                        <Typography>Softeware Dev. cost : </Typography>
+                      </Grid>
+                      <Grid item xs={6} md={6}>
+                        <Typography>
+                          {getValues().software
+                            ? Number(getValues().software)
+                            : '0'}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} md={6}>
@@ -393,11 +425,11 @@ function Form({ className, poq, setPOQ, ...rest }) {
                       <Typography>
                         {calculation.grandTotal && getValues().downPayment
                           ? Math.round(
-                              (calculation.grandTotal *
-                                getValues().downPayment +
-                                Number.EPSILON) *
-                                100,
-                            ) / 100
+                              calculation.grandTotal * getValues().downPayment +
+                                Number.EPSILON * 100,
+                            ) /
+                              100 +
+                            ' EGP'
                           : '0'}
                       </Typography>
                     </Grid>
@@ -408,11 +440,11 @@ function Form({ className, poq, setPOQ, ...rest }) {
                       <Typography>
                         {calculation.grandTotal && getValues().upponSupply
                           ? Math.round(
-                              (calculation.grandTotal *
-                                getValues().upponSupply +
-                                Number.EPSILON) *
-                                100,
-                            ) / 100
+                              calculation.grandTotal * getValues().upponSupply +
+                                Number.EPSILON * 100,
+                            ) /
+                              100 +
+                            ' EGP'
                           : '0'}
                       </Typography>
                     </Grid>
@@ -423,11 +455,12 @@ function Form({ className, poq, setPOQ, ...rest }) {
                       <Typography>
                         {calculation.grandTotal && getValues().upponComission
                           ? Math.round(
-                              (calculation.grandTotal *
+                              calculation.grandTotal *
                                 getValues().upponComission +
-                                Number.EPSILON) *
-                                100,
-                            ) / 100
+                                Number.EPSILON * 100,
+                            ) /
+                              100 +
+                            ' EGP'
                           : '0'}
                       </Typography>
                     </Grid>
@@ -465,13 +498,13 @@ function Form({ className, poq, setPOQ, ...rest }) {
                         label="USD"
                         type="number"
                         variant="outlined"
+                        value={transferRate.usd}
                         onChange={(e) => {
                           setTransferRate({
                             ...transferRate,
                             usd: Number(e.target.value),
                           });
                         }}
-                        errorObj={errors}
                       />
                     </Grid>
                     {/* Quantity */}
@@ -481,13 +514,13 @@ function Form({ className, poq, setPOQ, ...rest }) {
                         label="EUR"
                         type="number"
                         variant="outlined"
+                        value={transferRate.eur}
                         onChange={(e) => {
                           setTransferRate({
                             ...transferRate,
                             eur: Number(e.target.value),
                           });
                         }}
-                        errorObj={errors}
                       />
                     </Grid>
                   </Grid>
@@ -632,6 +665,7 @@ function Form({ className, poq, setPOQ, ...rest }) {
         upponComission: values.upponComission,
         dollarTransferRate: transferRate.usd,
         euroTransferRate: transferRate.eur,
+        software: values.software,
       };
       const response = axios
         .put(

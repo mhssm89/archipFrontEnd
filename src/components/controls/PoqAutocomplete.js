@@ -63,7 +63,8 @@ function currencyAutocomplete({ name, label = '', errorObj = {}, ...props }) {
   }
 
   React.useEffect(() => {
-    if (!open) setOptions([]);
+    //if (!open) setOptions([]);
+    onChangeHandle();
   }, [open]);
 
   return (
@@ -88,7 +89,7 @@ function currencyAutocomplete({ name, label = '', errorObj = {}, ...props }) {
             label={label}
             variant="outlined"
             error={isError}
-            onChange={(e) => onChangeHandle(e.target.value)}
+            //onChange={(e) => onChangeHandle(e.target.value)}
             InputProps={{
               ...params.InputProps,
               endAdornment: (

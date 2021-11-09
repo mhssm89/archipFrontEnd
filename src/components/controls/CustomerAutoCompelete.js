@@ -44,7 +44,7 @@ function CustomerAutoCompelete({
     setLoading(true);
     // Make an API request
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKENDURL}/Customers?_where[isDeleted]=0`,
+      `${process.env.NEXT_PUBLIC_BACKENDURL}/Customers?_where[isDeleted]=0&_limit=-1`,
     );
 
     setOptions(
@@ -58,7 +58,9 @@ function CustomerAutoCompelete({
   }
 
   React.useEffect(() => {
-    if (!open) setOptions([]);
+    // if (!open) setOptions([]);
+
+    onChangeHandle();
   }, [open]);
 
   return (
@@ -100,7 +102,7 @@ function CustomerAutoCompelete({
             label={label}
             variant="outlined"
             error={isError}
-            onChange={(e) => onChangeHandle(e.target.value)}
+            // onChange={(e) => onChangeHandle(e.target.value)}
             InputProps={{
               ...params.InputProps,
               endAdornment: (

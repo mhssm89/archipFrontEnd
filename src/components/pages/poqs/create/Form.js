@@ -73,6 +73,7 @@ const validationSchema = yup.object().shape({
   upponComission: yup.number().required('Required.'),
   dollar: yup.number().nullable(),
   euro: yup.number().nullable(),
+  software: yup.number().nullable(),
 });
 
 function Form({ className, ...rest }) {
@@ -105,6 +106,7 @@ function Form({ className, ...rest }) {
       downPayment: 60,
       upponSupply: 30,
       upponComission: 10,
+      software: 0,
     },
   });
   // console.log(customerData);
@@ -185,6 +187,26 @@ function Form({ className, ...rest }) {
 
             <Box mt={3}>
               <Card>
+                <CardHeader title="Software" />
+                <Divider />
+                <CardContent>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={12}>
+                      <FormInput
+                        name="software"
+                        label="Software development"
+                        type="number"
+                        variant="outlined"
+                        errorObj={errors}
+                      />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Box>
+
+            <Box mt={3}>
+              <Card>
                 <CardHeader title="Others" />
                 <Divider />
                 <CardContent>
@@ -207,6 +229,7 @@ function Form({ className, ...rest }) {
                         errorObj={errors}
                       />
                     </Grid>
+
                     <Grid item xs={12} md={12}>
                       <FormInput
                         name="totaldiscount"
@@ -220,7 +243,6 @@ function Form({ className, ...rest }) {
                 </CardContent>
               </Card>
             </Box>
-
             <Box mt={3}>
               <Card>
                 <CardHeader title="Taxes" />
@@ -240,7 +262,6 @@ function Form({ className, ...rest }) {
                 </CardContent>
               </Card>
             </Box>
-
             <Box mt={3}>
               <Card>
                 <CardHeader title="Total" />
@@ -254,6 +275,16 @@ function Form({ className, ...rest }) {
                       <Typography>
                         {Math.round((productsCost + Number.EPSILON) * 100) /
                           100}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6} md={6}>
+                      <Typography>Softeware Dev. cost : </Typography>
+                    </Grid>
+                    <Grid item xs={6} md={6}>
+                      <Typography>
+                        {getValues().software
+                          ? Number(getValues().software)
+                          : '0'}
                       </Typography>
                     </Grid>
                     <Grid item xs={6} md={6}>
@@ -307,7 +338,6 @@ function Form({ className, ...rest }) {
                 </CardContent>
               </Card>
             </Box>
-
             {/* payment terms */}
             <Box mt={3}>
               <Card>
@@ -349,11 +379,11 @@ function Form({ className, ...rest }) {
                       <Typography>
                         {calculation.grandTotal
                           ? Math.round(
-                              (calculation.grandTotal *
-                                getValues().downPayment +
-                                Number.EPSILON) *
-                                100,
-                            ) / 100
+                              calculation.grandTotal * getValues().downPayment +
+                                Number.EPSILON * 100,
+                            ) /
+                              100 +
+                            ' EGP'
                           : '0'}
                       </Typography>
                     </Grid>
@@ -364,11 +394,11 @@ function Form({ className, ...rest }) {
                       <Typography>
                         {calculation.grandTotal
                           ? Math.round(
-                              (calculation.grandTotal *
-                                getValues().upponSupply +
-                                Number.EPSILON) *
-                                100,
-                            ) / 100
+                              calculation.grandTotal * getValues().upponSupply +
+                                Number.EPSILON * 100,
+                            ) /
+                              100 +
+                            ' EGP'
                           : '0'}
                       </Typography>
                     </Grid>
@@ -379,11 +409,12 @@ function Form({ className, ...rest }) {
                       <Typography>
                         {calculation.grandTotal
                           ? Math.round(
-                              (calculation.grandTotal *
+                              calculation.grandTotal *
                                 getValues().upponComission +
-                                Number.EPSILON) *
-                                100,
-                            ) / 100
+                                Number.EPSILON * 100,
+                            ) /
+                              100 +
+                            ' EGP'
                           : '0'}
                       </Typography>
                     </Grid>
@@ -572,6 +603,7 @@ function Form({ className, ...rest }) {
 
     var subtotal =
       myProductsCost +
+      Number(getValues().software) +
       Number(getValues().otherCosts) +
       Number(getValues().shippingCost) -
       Number(getValues().totaldiscount);
@@ -631,6 +663,7 @@ function Form({ className, ...rest }) {
     downPayment,
     upponSupply,
     upponComission,
+    software,
   }) {
     try {
       // Reset submitError message
@@ -652,8 +685,8 @@ function Form({ className, ...rest }) {
         upponComission: upponComission,
         dollarTransferRate: transferRate.usd,
         euroTransferRate: transferRate.eur,
+        software: software,
       };
-      console.log(poqInput);
 
       const response = axios
         .post(`${process.env.NEXT_PUBLIC_BACKENDURL}/poqs`, poqInput)

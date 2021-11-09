@@ -165,186 +165,31 @@ const sections = [
           },
         ],
       },
-      // {
-      //   title: 'Orders',
-      //   icon: FolderIcon,
-      //   href: '/orders',
-      //   items: [
-      //     {
-      //       title: 'List Orders',
-      //       href: '/orders',
-      //     },
-      //     {
-      //       title: 'View Order',
-      //       href: '/orders/1',
-      //     },
-      //   ],
-      // },
-      // {
-      //   title: 'Invoices',
-      //   icon: ReceiptIcon,
-      //   href: '/invoices',
-      //   items: [
-      //     {
-      //       title: 'List Invoices',
-      //       href: '/invoices',
-      //     },
-      //     {
-      //       title: 'View Invoice',
-      //       href: '/invoices/1',
-      //     },
-      //   ],
-      // },
+
+      {
+        title: 'Reports',
+        icon: FolderIcon,
+        href: '/orders',
+        items: [
+          {
+            title: 'Customers',
+            href: '/customer-report',
+            icon: ReceiptIcon,
+          },
+          {
+            title: 'Projects',
+            href: '/orders-report',
+            icon: ReceiptIcon,
+          },
+          {
+            title: 'Qutaions',
+            href: '/Quations-report',
+            icon: ReceiptIcon,
+          },
+        ],
+      },
     ],
   },
-  // {
-  //   subheader: 'Applications',
-  //   items: [
-  //     {
-  //       title: 'Projects Platform',
-  //       href: '/projects',
-  //       icon: BriefcaseIcon,
-  //       items: [
-  //         {
-  //           title: 'Overview',
-  //           href: '/projects/overview',
-  //         },
-  //         {
-  //           title: 'Browse Projects',
-  //           href: '/projects/browse',
-  //         },
-  //         {
-  //           title: 'Create Project',
-  //           href: '/projects/create',
-  //         },
-  //         {
-  //           title: 'View Project',
-  //           href: '/projects/1',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: 'Social Platform',
-  //       href: '/social',
-  //       icon: ShareIcon,
-  //       items: [
-  //         {
-  //           title: 'Profile',
-  //           href: '/social/profile',
-  //         },
-  //         {
-  //           title: 'Feed',
-  //           href: '/social/feed',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: 'Kanban',
-  //       href: '/kanban',
-  //       icon: TrelloIcon,
-  //     },
-  //     {
-  //       title: 'Mail',
-  //       href: '/mail',
-  //       icon: MailIcon,
-  //     },
-  //     {
-  //       title: 'Chat',
-  //       href: '/chat',
-  //       icon: MessageCircleIcon,
-  //       // eslint-disable-next-line react/display-name
-  //       info: () => <Chip color="secondary" size="small" label="Updated" />,
-  //     },
-  //     {
-  //       title: 'Calendar',
-  //       href: '/calendar',
-  //       icon: CalendarIcon,
-  //       // eslint-disable-next-line react/display-name
-  //       info: () => <Chip color="secondary" size="small" label="Updated" />,
-  //     },
-  //   ],
-  // },
-  // {
-  //   subheader: 'Auth',
-  //   items: [
-  //     {
-  //       title: 'Login',
-  //       href: '/login-unprotected',
-  //       icon: LockIcon,
-  //     },
-  //     {
-  //       title: 'Register',
-  //       href: '/register-unprotected',
-  //       icon: UserPlusIcon,
-  //     },
-  //   ],
-  // },
-  // {
-  //   subheader: 'Pages',
-  //   items: [
-  //     {
-  //       title: 'Account',
-  //       href: '/account',
-  //       icon: UserIcon,
-  //     },
-  //     {
-  //       title: 'Error',
-  //       href: '/404',
-  //       icon: AlertCircleIcon,
-  //     },
-  //     {
-  //       title: 'Pricing',
-  //       href: '/pricing',
-  //       icon: DollarSignIcon,
-  //     },
-  //   ],
-  // },
-  // {
-  //   subheader: 'Extra',
-  //   items: [
-  //     {
-  //       title: 'Charts',
-  //       href: '/extra/charts',
-  //       icon: BarChartIcon,
-  //       items: [
-  //         {
-  //           title: 'Apex Charts',
-  //           href: '/extra/charts/apex',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: 'Forms',
-  //       href: '/extra/forms',
-  //       icon: EditIcon,
-  //       items: [
-  //         {
-  //           title: 'Formik',
-  //           href: '/extra/forms/formik',
-  //         },
-  //         {
-  //           title: 'Redux Forms',
-  //           href: '/extra/forms/redux',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: 'Editors',
-  //       href: '/extra/editors',
-  //       icon: LayoutIcon,
-  //       items: [
-  //         {
-  //           title: 'DraftJS Editor',
-  //           href: '/extra/editors/draft-js',
-  //         },
-  //         {
-  //           title: 'Quill Editor',
-  //           href: '/extra/editors/quill',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
 ];
 
 function renderNavItems({ items, pathname, depth = 0 }) {
