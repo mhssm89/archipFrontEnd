@@ -123,6 +123,7 @@ function ProjectReview({
         upponComission: projectData.poq.upponComission,
         dollarTransferRate: projectData.poq.dollarTransferRate,
         euroTransferRate: projectData.poq.euroTransferRate,
+        software: projectData.poq.software,
       };
 
       axios

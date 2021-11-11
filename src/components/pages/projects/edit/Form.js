@@ -107,6 +107,7 @@ const validationSchema = yup.object().shape({
   upponComission: yup.number().required('Required.'),
   dollar: yup.number().nullable(),
   euro: yup.number().nullable(),
+  software: yup.number().nullable(),
 });
 
 function Form({ className, project, setproject, ...rest }) {
@@ -167,6 +168,7 @@ function Form({ className, project, setproject, ...rest }) {
       upponComission: project.project.upponComission || 10,
       dollar: project.project.dollarTransferRate || 1,
       euro: project.project.euroTransferRate || 1,
+      software: project.project.software,
       submitError: '',
     },
   });
@@ -301,6 +303,26 @@ function Form({ className, project, setproject, ...rest }) {
               </CardContent>
             </Card>
 
+            <Box mt={3}>
+              <Card>
+                <CardHeader title="Software" />
+                <Divider />
+                <CardContent>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={12}>
+                      <FormInput
+                        name="software"
+                        label="Software development"
+                        type="number"
+                        variant="outlined"
+                        errorObj={errors}
+                      />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Box>
+
             {/* Costs */}
             <Box mt={3}>
               <Card>
@@ -366,6 +388,16 @@ function Form({ className, project, setproject, ...rest }) {
                       <Typography>
                         {Math.round((productsCost + Number.EPSILON) * 100) /
                           100}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6} md={6}>
+                      <Typography>Softeware Dev. cost : </Typography>
+                    </Grid>
+                    <Grid item xs={6} md={6}>
+                      <Typography>
+                        {getValues().software
+                          ? Number(getValues().software)
+                          : '0'}
                       </Typography>
                     </Grid>
                     <Grid item xs={6} md={6}>
@@ -694,6 +726,7 @@ function Form({ className, project, setproject, ...rest }) {
       //   upponComission: values.upponComission,
       //   dollarTransferRate: transferRate.usd,
       //   euroTransferRate: transferRate.eur,
+      //   software : values.software ,
       // };
       // console.log(projectInput);
       // const response = axios

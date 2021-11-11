@@ -100,6 +100,14 @@ function Poqdetail({
                   )}
                 </TableRow>
                 <TableRow>
+                  <TableCell>Software Cost</TableCell>
+                  {poq ? (
+                    <TableCell>{poq.software}</TableCell>
+                  ) : (
+                    <TableCell> 0.00 </TableCell>
+                  )}
+                </TableRow>
+                <TableRow>
                   <TableCell>Total Cost</TableCell>
                   {poq ? (
                     <TableCell>{poq.grandtotal}</TableCell>

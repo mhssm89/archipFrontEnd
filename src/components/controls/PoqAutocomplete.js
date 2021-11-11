@@ -57,6 +57,7 @@ function currencyAutocomplete({ name, label = '', errorObj = {}, ...props }) {
         profit: item.profit,
         dollarTransferRate: item.dollarTransferRate,
         euroTransferRate: item.euroTransferRate,
+        software: item.software,
       })),
     );
     setLoading(false);
