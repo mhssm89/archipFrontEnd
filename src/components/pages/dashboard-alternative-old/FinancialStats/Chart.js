@@ -18,18 +18,18 @@ function Chart({ data: dataProp, labels, className, ...rest }) {
   const data = {
     datasets: [
       {
-        label: 'Income',
-        backgroundColor: theme.palette.success.main,
-        data: dataProp.intransactions,
+        label: 'This year',
+        backgroundColor: theme.palette.secondary.main,
+        data: dataProp.thisYear,
         barThickness: 12,
         maxBarThickness: 10,
         barPercentage: 0.5,
         categoryPercentage: 0.5,
       },
       {
-        label: 'Outcome',
-        backgroundColor: theme.palette.warning.main,
-        data: dataProp.outtransactions,
+        label: 'Last year',
+        backgroundColor: fade(theme.palette.secondary.main, 0.25),
+        data: dataProp.lastYear,
         barThickness: 12,
         maxBarThickness: 10,
         barPercentage: 0.5,
@@ -45,7 +45,7 @@ function Chart({ data: dataProp, labels, className, ...rest }) {
     animation: false,
     cornerRadius: 20,
     legend: {
-      display: true,
+      display: false,
     },
     layout: {
       padding: 0,
@@ -77,10 +77,10 @@ function Chart({ data: dataProp, labels, className, ...rest }) {
           ticks: {
             padding: 20,
             fontColor: theme.palette.text.secondary,
-            beginAtZero: false,
+            beginAtZero: true,
             min: 0,
-            maxTicksLimit: 10,
-            callback: (value) => (value > 0 ? `${value}` : value),
+            maxTicksLimit: 5,
+            callback: (value) => (value > 0 ? `${value}K` : value),
           },
         },
       ],
@@ -96,15 +96,15 @@ function Chart({ data: dataProp, labels, className, ...rest }) {
       borderColor: theme.palette.divider,
       backgroundColor: theme.palette.background.dark,
       titleFontColor: theme.palette.text.primary,
-      bodyFontColor: theme.palette.text.warning,
+      bodyFontColor: theme.palette.text.secondary,
       footerFontColor: theme.palette.text.secondary,
       callbacks: {
         title: () => {},
         label: (tooltipItem) => {
-          let label = `Transactions ${tooltipItem.yLabel}`;
+          let label = `Sales: ${tooltipItem.yLabel}`;
 
           if (tooltipItem.yLabel > 0) {
-            label += '';
+            label += 'K';
           }
 
           return label;

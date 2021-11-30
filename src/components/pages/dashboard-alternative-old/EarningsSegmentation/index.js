@@ -10,12 +10,11 @@ import {
 } from '@material-ui/core';
 
 import clsx from 'clsx';
-import axios from 'axios';
+
 import GenericMoreButton from 'src/components/common/GenericMoreButton';
 import useIsMountedRef from 'src/hooks/useIsMountedRef';
 
 import Chart from './Chart';
-import { element } from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -36,40 +35,18 @@ function EarningsSegmentation({ className, ...rest }) {
   const classes = useStyles();
   const isMountedRef = useIsMountedRef();
   const [earnings, setEarnings] = React.useState(null);
-  var mylabels = [];
-  var mydata = [];
-  var allprojects = 1;
 
   const getEarnings = React.useCallback(async () => {
     try {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKENDURL}/reportoverview/projectscope`,
-      );
-      const predata = res.data;
-      allprojects = predata[1][0].TotalProjects;
-      var precentage = 0;
-      predata[0].forEach((element) => {
-        mylabels.push(element.scope);
-        precentage = (element.COUNT / allprojects) * 100;
-        mydata.push(Math.round(precentage * 10) / 10);
-        precentage = 0;
-      });
-
       const data = {
         earnings: {
           datasets: [
             {
-              data: mydata,
-              backgroundColor: [
-                '#3d72eb',
-                '#4b9e86',
-                '#b658f5',
-                '#f654f8',
-                '#5554f9',
-              ],
+              data: [56, 24, 20],
+              backgroundColor: ['#3d72eb', '#4b9e86', '#b658f5'],
             },
           ],
-          labels: mylabels,
+          labels: ['Subscriptions', 'Affiliate', 'Sales'],
         },
       };
 
@@ -88,9 +65,13 @@ function EarningsSegmentation({ className, ...rest }) {
   if (!earnings) {
     return null;
   }
+
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
-      <CardHeader title="Projects Segmentation" />
+      <CardHeader
+        action={<GenericMoreButton />}
+        title="Earnings Segmentation"
+      />
       <Divider />
       <Box p={3} position="relative" minHeight={320}>
         <Chart data={earnings} />

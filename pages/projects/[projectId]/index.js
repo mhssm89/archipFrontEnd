@@ -6,8 +6,11 @@ import {
   makeStyles,
   Grid,
   Typography,
+  SvgIcon,
+  Button,
+  Dialog,
 } from '@material-ui/core';
-
+import { Printer as Printer } from 'react-feather';
 import Page from 'src/components/common/Page';
 import Protected from 'src/components/common/Protected';
 import Header from 'src/components/common/Header';
@@ -20,7 +23,7 @@ import IncomeResult from 'src/components/pages/projects/view/IncomeResult';
 import OutcomeResult from 'src/components/pages/projects/view/OutcomeResult';
 import useIsMountedRef from 'src/hooks/useIsMountedRef';
 import LoadingScreen from 'src/components/common/LoadingScreen';
-
+import ProjectDetailView from 'src/components/pages/projects/view/ProjectDetailView.js';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { isMoment } from 'moment';
@@ -46,6 +49,9 @@ function ProjectView({ className, ...rest }) {
   const [project, setProject] = React.useState([]);
   const [totalIncome, setTotalIncome] = React.useState([]);
   const [totalOutcome, setTotalOutcome] = React.useState([]);
+  const [printprieview, setprintprieview] = React.useState(false);
+  const [incometransactions, setIncomeTrasaction] = React.useState({});
+  const [outcometransactions, setOutcomeTrasaction] = React.useState({});
 
   const projectId = router.query['projectId'];
   React.useEffect(() => {
@@ -79,7 +85,26 @@ function ProjectView({ className, ...rest }) {
   ) : (
     <Page className={classes.root} title="Overview">
       <Container>
-        <Header links={headerLinks} mainText="view Project" />
+        <Header
+          links={headerLinks}
+          mainText="view Project"
+          rightComponent={
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={() => {
+                setprintprieview(true);
+              }}
+              className={classes.action}
+              startIcon={
+                <SvgIcon fontSize="small">
+                  <Printer />
+                </SvgIcon>
+              }>
+              Print project details
+            </Button>
+          }
+        />
         <Box mt={3}>
           <Statistics
             total={project.project['grandTotal']}
@@ -111,13 +136,33 @@ function ProjectView({ className, ...rest }) {
           </Grid>
 
           <Grid item md={6} xs={12}>
-            <IncomeResult settotalincome={setTotalIncome} />
+            <IncomeResult
+              settotalincome={setTotalIncome}
+              setincometransaction={setIncomeTrasaction}
+            />
           </Grid>
           <Grid item md={6} xs={12}>
-            <OutcomeResult setotalutcome={setTotalOutcome} />
+            <OutcomeResult
+              setotalutcome={setTotalOutcome}
+              setoutcometransaction={setOutcomeTrasaction}
+            />
           </Grid>
         </Grid>
       </Container>
+      <Dialog fullScreen open={printprieview}>
+        <ProjectDetailView
+          setPrintView={setprintprieview}
+          projectDetail={[
+            { total: project.project['grandTotal'] },
+            { totalincome: totalIncome },
+            { totaloutcome: totalOutcome },
+            { products: project['projectdetail'] },
+            { projectinfo: project.project },
+            { incometransactions: incometransactions },
+            { outcometransactions: outcometransactions },
+          ]}
+        />
+      </Dialog>
     </Page>
   );
 }

@@ -61,7 +61,7 @@ const InvoicePreview = (props) => {
       <Divider style={{ margin: '1%' }} />
       <Grid item xs={12} style={{ margin: '1%', marginBottom: '3%' }}>
         <Typography align="center" color="textPrimary" variant="h1">
-          Invoice
+          {invoice.logestic ? 'SG&A invoice' : 'Invoice'}
         </Typography>
         <Divider style={{ margin: '1%' }} />
         <Typography color="textPrimary" variant="h4" style={{ margin: '1%' }}>

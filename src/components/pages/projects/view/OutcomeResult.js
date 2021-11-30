@@ -27,7 +27,12 @@ const useStyles = makeStyles(() => ({
   root: {},
 }));
 
-function OutcomeResult({ className, setotalutcome, ...rest }) {
+function OutcomeResult({
+  className,
+  setotalutcome,
+  setoutcometransaction,
+  ...rest
+}) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
@@ -57,6 +62,7 @@ function OutcomeResult({ className, setotalutcome, ...rest }) {
         `${process.env.NEXT_PUBLIC_BACKENDURL}/transactions?_where[type]=out&[project]=${projectId}`,
       );
       setTransaction(res.data);
+      setoutcometransaction({ outcome: res.data });
       var total = 0;
       res.data.map((item) => {
         total = total + item.amount;

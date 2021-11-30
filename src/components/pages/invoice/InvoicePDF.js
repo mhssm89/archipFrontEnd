@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
 
 const InvoicePDF = (props) => {
   const { invoice, customer } = props;
+  console.log(invoice, customer);
   return invoice ? (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -116,7 +117,7 @@ const InvoicePDF = (props) => {
             <Text style={styles.body2}>Egypt</Text>
           </View>
           <View>
-            <Text style={styles.body2}>ARCH IP</Text>
+            <Text style={styles.body2}>Arch-IP</Text>
             <Text style={styles.body2}>Smart Systems Solutions</Text>
           </View>
           <View>
@@ -208,7 +209,7 @@ const InvoicePDF = (props) => {
             <Text style={styles.body2}>Egypt</Text>
           </View>
           <View>
-            <Text style={styles.body2}>ARCH IP</Text>
+            <Text style={styles.body2}>Arch-IP</Text>
             <Text style={styles.body2}>Smart Systems Solutions</Text>
           </View>
           <View>

@@ -38,6 +38,7 @@ import {
   User as UserIcon,
   UserPlus as UserPlusIcon,
   Users as UsersIcon,
+  FilePlus as logisticIcon,
 } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
@@ -164,6 +165,11 @@ const sections = [
             href: '/suppliers/create',
           },
         ],
+      },
+      {
+        title: 'SG&A',
+        icon: logisticIcon,
+        href: '/sgas',
       },
 
       {

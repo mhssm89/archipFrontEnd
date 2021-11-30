@@ -20,11 +20,12 @@ import {
   Grid,
   Button,
   Dialog,
+  Select,
 } from '@material-ui/core';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-
+import moment from 'moment';
 import clsx from 'clsx';
 import { useSnackbar } from 'notistack';
 import {
@@ -43,6 +44,9 @@ import FormSelect from '../../controls/FormSelect';
 import FormInput from 'src/components/controls/FormInput';
 import DeleteDialoge from '../../controls/DeleteDialoug';
 import axios from 'axios';
+import { filter, values } from 'lodash';
+import FormDatePicker from '../../controls/FormDatePicker';
+import { fr } from 'date-fns/locale';
 const useStyles = makeStyles(() => ({
   root: {},
 }));
@@ -53,6 +57,8 @@ const validationSchema = yup.object().shape({
     .shape({ label: yup.string(), id: yup.string() })
     .nullable(),
   search: yup.string(),
+  startDate: yup.date().nullable(),
+  endDate: yup.date().nullable(),
 });
 
 const getStatusLabel = (projectStatus) => {
@@ -84,6 +90,7 @@ const filterOptions = [
   { label: 'Customer', id: 'customer.firstName' },
   { label: 'Status', id: 'status' },
   { label: 'Scope', id: 'scope' },
+  { label: 'date', id: 'date' },
 ];
 
 function Results({ className, query, setquery, ...rest }) {
@@ -92,6 +99,7 @@ function Results({ className, query, setquery, ...rest }) {
   const [OpenDeleteDialoge, setOpenDeleteDialoge] = React.useState(false);
   const [deleteItem, setDeleteItem] = React.useState({});
   const [isBulkLoading, setIsBulkLoading] = React.useState(false);
+  const [showdate, setShowdate] = React.useState({});
   const {
     // items,
     selectedItems,
@@ -123,6 +131,7 @@ function Results({ className, query, setquery, ...rest }) {
     handleSubmit,
     errors,
     setError,
+    getValues,
     setValue,
     reset,
     watch,
@@ -146,9 +155,11 @@ function Results({ className, query, setquery, ...rest }) {
                 <FormSelect
                   options={filterOptions}
                   name="filter"
+                  setSelected={setShowdate}
                   label="Filter"
                   variant="outlined"
                   setValue={setValue}
+                  value={getValues('filter')}
                   errorObj={errors}
                 />
               </Grid>
@@ -160,6 +171,7 @@ function Results({ className, query, setquery, ...rest }) {
                   errorObj={errors}
                 />
               </Grid>
+
               <Grid item xs={4}>
                 <Button
                   variant="contained"
@@ -181,6 +193,30 @@ function Results({ className, query, setquery, ...rest }) {
                   reset
                 </Button>
               </Grid>
+              {showdate.value == 'date' ? (
+                <>
+                  <Grid item container spacing={3} md={6} xs={12}>
+                    <Grid item md={6}>
+                      <FormDatePicker
+                        name="startDate"
+                        label="From"
+                        variant="blocked"
+                        errorObj={errors}
+                      />
+                    </Grid>
+                    <Grid item md={6}>
+                      <FormDatePicker
+                        name="endDate"
+                        label="To"
+                        variant="outlined"
+                        errorObj={errors}
+                      />
+                    </Grid>
+                  </Grid>
+                </>
+              ) : (
+                <></>
+              )}
             </Grid>
           </form>
         </FormProvider>
@@ -203,6 +239,7 @@ function Results({ className, query, setquery, ...rest }) {
                   <TableCell>Scope</TableCell>
                   <TableCell>Start Date</TableCell>
                   <TableCell>End Date</TableCell>
+                  <TableCell>Total</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -242,6 +279,10 @@ function Results({ className, query, setquery, ...rest }) {
                           <TableCell>{item.project_scope.scope}</TableCell>
                           <TableCell>{item.startDate}</TableCell>
                           <TableCell>{item.endDate}</TableCell>
+                          <TableCell>
+                            {item.grandTotal}
+                            {' EGP'}
+                          </TableCell>
                           <TableCell align="right">
                             <IconButton
                               onClick={() =>
@@ -308,6 +349,7 @@ function Results({ className, query, setquery, ...rest }) {
       </Dialog>
     </div>
   );
+
   async function resetFilter() {
     try {
       axios
@@ -323,28 +365,50 @@ function Results({ className, query, setquery, ...rest }) {
       };
     }
   }
-  async function onSubmit({ filter, search }) {
+  async function onSubmit({ filter, search, startDate, endDate }) {
     try {
       // Reset submitError message
       setValue('submitError', '');
 
       //   status: status ? 'ACTIVE' : 'INACTIVE',
       // };
-      axios
-        .get(
-          `${process.env.NEXT_PUBLIC_BACKENDURL}/projects?_where[${filter.id}]=${search}&[isDeleted]=0`,
-        )
-        .then((res) => {
-          console.log(res.data);
-          setquery(res.data);
-          enqueueSnackbar('Filter applied', {
-            variant: 'success',
+      if (filter.id == 'date') {
+        var fromDate = moment(startDate).format('YYYY-MM-DD');
+
+        var toDate = moment(endDate).format('YYYY-MM-DD');
+        //request filter by date here
+        axios
+          .get(
+            `${process.env.NEXT_PUBLIC_BACKENDURL}/projects?_where[startDate_gte]=${fromDate}&[startDate_lte]=${toDate}&[isDeleted]=0`,
+          )
+          .then((res) => {
+            console.log(res.data);
+            setquery(res.data);
+            enqueueSnackbar('Filter applied', {
+              variant: 'success',
+            });
+          })
+          .catch((err) => {
+            enqueueSnackbar('Error in filtering', { variant: 'error' });
+            console.log(err);
           });
-        })
-        .catch((err) => {
-          enqueueSnackbar('Error in filtering', { variant: 'error' });
-          console.log(err);
-        });
+      } else {
+        axios
+          .get(
+            `${process.env.NEXT_PUBLIC_BACKENDURL}/projects?_where[${filter.id}]=${search}&[isDeleted]=0`,
+          )
+          .then((res) => {
+            console.log(res.data);
+            setquery(res.data);
+            enqueueSnackbar('Filter applied', {
+              variant: 'success',
+            });
+          })
+          .catch((err) => {
+            enqueueSnackbar('Error in filtering', { variant: 'error' });
+            console.log(err);
+          });
+      }
     } catch (err) {
       // Show error message
       enqueueSnackbar('Error in filtering', { variant: 'error' });

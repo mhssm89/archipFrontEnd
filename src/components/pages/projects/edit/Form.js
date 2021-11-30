@@ -484,13 +484,13 @@ function Form({ className, project, setproject, ...rest }) {
                     </Grid>
                     <Grid item xs={6} md={6}>
                       <Typography>
-                        {calculation.grandTotal & getValues().upponSupply
+                        {calculation.grandTotal && getValues().downPayment
                           ? Math.round(
-                              (calculation.grandTotal *
-                                getValues().downPayment +
-                                Number.EPSILON) *
-                                100,
-                            ) / 100
+                              calculation.grandTotal * getValues().downPayment +
+                                Number.EPSILON * 100,
+                            ) /
+                              100 +
+                            ' EGP'
                           : '0'}
                       </Typography>
                     </Grid>
@@ -499,13 +499,13 @@ function Form({ className, project, setproject, ...rest }) {
                     </Grid>
                     <Grid item xs={6} md={6}>
                       <Typography>
-                        {calculation.grandTotal & getValues().upponSupply
+                        {calculation.grandTotal && getValues().upponSupply
                           ? Math.round(
-                              (calculation.grandTotal *
-                                getValues().upponSupply +
-                                Number.EPSILON) *
-                                100,
-                            ) / 100
+                              calculation.grandTotal * getValues().upponSupply +
+                                Number.EPSILON * 100,
+                            ) /
+                              100 +
+                            ' EGP'
                           : '0'}
                       </Typography>
                     </Grid>
@@ -514,13 +514,14 @@ function Form({ className, project, setproject, ...rest }) {
                     </Grid>
                     <Grid item xs={6} md={6}>
                       <Typography>
-                        {calculation.grandTotal & getValues().upponComission
+                        {calculation.grandTotal && getValues().upponComission
                           ? Math.round(
-                              (calculation.grandTotal *
+                              calculation.grandTotal *
                                 getValues().upponComission +
-                                Number.EPSILON) *
-                                100,
-                            ) / 100
+                                Number.EPSILON * 100,
+                            ) /
+                              100 +
+                            ' EGP'
                           : '0'}
                       </Typography>
                     </Grid>
@@ -710,25 +711,25 @@ function Form({ className, project, setproject, ...rest }) {
   async function onSubmit(values) {
     try {
       console.log(values);
-      // Reset submitError message
-      // setValue('submitError', '');
-      // const projectInput = {
-      //   name: values.projectName,
-      //   customer: values.customerName.id,
-      //   poq: values.poqNumber.id,
-      //   status: values.status.label,
-      //   project_scope: values.scope.id,
-      //   sartDate: values.startDate,
-      //   endDate: values.endDate,
-      //   grandTotal: calculation.grandTotal,
-      //   downPayment: values.downPayment,
-      //   upponSupply: values.upponSupply,
-      //   upponComission: values.upponComission,
-      //   dollarTransferRate: transferRate.usd,
-      //   euroTransferRate: transferRate.eur,
-      //   software : values.software ,
-      // };
-      // console.log(projectInput);
+      //Reset submitError message
+      setValue('submitError', '');
+      const projectInput = {
+        name: values.projectName,
+        customer: values.customerName.id,
+        poq: values.poqNumber.id,
+        status: values.status.label,
+        project_scope: values.scope.id,
+        sartDate: values.startDate,
+        endDate: values.endDate,
+        grandTotal: calculation.grandTotal,
+        downPayment: values.downPayment,
+        upponSupply: values.upponSupply,
+        upponComission: values.upponComission,
+        dollarTransferRate: transferRate.usd,
+        euroTransferRate: transferRate.eur,
+        software: values.software,
+      };
+      console.log(projectInput);
       // const response = axios
       //   .put(
       //     `http://localhost:1337/projects/${project.project.id}`,

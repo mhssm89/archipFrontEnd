@@ -3,8 +3,6 @@ import React from 'react';
 import { Card, Grid, makeStyles, Typography } from '@material-ui/core';
 
 import clsx from 'clsx';
-import axios from 'axios';
-import useIsMountedRef from 'src/hooks/useIsMountedRef';
 
 import Label from 'src/components/common/Label';
 
@@ -36,25 +34,12 @@ const useStyles = makeStyles((theme) => ({
 
 function Overview({ className, ...rest }) {
   const classes = useStyles();
-  const isMountedRef = useIsMountedRef();
-  const [overViewData, setOverViewData] = React.useState({});
-  const getData = React.useCallback(async () => {
-    try {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKENDURL}/reportoverview`,
-      );
-      const data = res.data;
-      if (isMountedRef.current) {
-        setOverViewData(data[0]);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }, [isMountedRef]);
-
-  React.useEffect(() => {
-    getData();
-  }, [getData]);
+  const overview = {
+    income: '854,355.00',
+    expanses: '373,250.50',
+    profit: '123,532.00',
+    subscriptions: '26,000',
+  };
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
@@ -65,40 +50,15 @@ function Overview({ className, ...rest }) {
             gutterBottom
             variant="overline"
             color="textSecondary">
-            Total Projects number
-          </Typography>
-          <div className={classes.valueContainer}>
-            <Typography variant="h3" color="textPrimary">
-              {overViewData.ProjectsCount}
-            </Typography>
-          </div>
-        </Grid>
-        <Grid className={classes.item} item md={3} sm={6} xs={12}>
-          <Typography
-            component="h2"
-            gutterBottom
-            variant="overline"
-            color="textSecondary">
-            Total Customers numbers
-          </Typography>
-          <div className={classes.valueContainer}>
-            <Typography variant="h3" color="textPrimary">
-              {overViewData.CustomerCount}
-            </Typography>
-          </div>
-        </Grid>
-        <Grid className={classes.item} item md={3} sm={6} xs={12}>
-          <Typography
-            component="h2"
-            gutterBottom
-            variant="overline"
-            color="textSecondary">
             Total Income
           </Typography>
           <div className={classes.valueContainer}>
             <Typography variant="h3" color="textPrimary">
-              EGP {overViewData.TotalIncome}
+              ${overview.income}
             </Typography>
+            <Label className={classes.label} color="success">
+              +25%
+            </Label>
           </div>
         </Grid>
         <Grid className={classes.item} item md={3} sm={6} xs={12}>
@@ -107,11 +67,45 @@ function Overview({ className, ...rest }) {
             gutterBottom
             variant="overline"
             color="textSecondary">
-            Total Outcome
+            Total Expanses
           </Typography>
           <div className={classes.valueContainer}>
             <Typography variant="h3" color="textPrimary">
-              EGP {overViewData.TotalOutcome}
+              ${overview.expanses}
+            </Typography>
+            <Label className={classes.label} color="success">
+              +12%
+            </Label>
+          </div>
+        </Grid>
+        <Grid className={classes.item} item md={3} sm={6} xs={12}>
+          <Typography
+            component="h2"
+            gutterBottom
+            variant="overline"
+            color="textSecondary">
+            Net Profit
+          </Typography>
+          <div className={classes.valueContainer}>
+            <Typography variant="h3" color="textPrimary">
+              {overview.profit}
+            </Typography>
+            <Label className={classes.label} color="error">
+              -20%
+            </Label>
+          </div>
+        </Grid>
+        <Grid className={classes.item} item md={3} sm={6} xs={12}>
+          <Typography
+            component="h2"
+            gutterBottom
+            variant="overline"
+            color="textSecondary">
+            Active Subscriptions
+          </Typography>
+          <div className={classes.valueContainer}>
+            <Typography variant="h3" color="textPrimary">
+              {overview.subscriptions}
             </Typography>
           </div>
         </Grid>

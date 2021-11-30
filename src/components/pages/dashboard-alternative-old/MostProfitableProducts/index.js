@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import axios from 'axios';
+
 import clsx from 'clsx';
 import numeral from 'numeral';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -94,9 +94,8 @@ function MostProfitableProducts({ className, ...rest }) {
   const classes = useStyles();
   const isMountedRef = useIsMountedRef();
   const [products, setProducts] = React.useState([]);
-  const [myproducts, setMyProducts] = React.useState([]);
 
-  const old = React.useCallback(async () => {
+  const getProducts = React.useCallback(async () => {
     try {
       const data = { products: PRODUCTS };
 
@@ -109,60 +108,56 @@ function MostProfitableProducts({ className, ...rest }) {
   }, [isMountedRef]);
 
   React.useEffect(() => {
-    old();
-  }, [old]);
-
-  const getProducts = React.useCallback(async () => {
-    try {
-      const resp = axios.get(
-        `${process.env.NEXT_PUBLIC_BACKENDURL}/reportoverview/mostproducts`,
-      );
-      const data = (await resp).data;
-      if (isMountedRef.current) {
-        setMyProducts(data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [isMountedRef]);
-
-  React.useEffect(() => {
     getProducts();
   }, [getProducts]);
 
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
-      <CardHeader title="Most Sold Products" />
+      <CardHeader
+        action={<GenericMoreButton />}
+        title="Most Profitable Products"
+      />
       <Divider />
       <PerfectScrollbar>
         <Box minWidth={700}>
           <Table>
             <TableBody>
-              {myproducts.map((product) => (
+              {products.map((product) => (
                 <TableRow hover key={product.id}>
                   <TableCell>
                     <Box display="flex" alignItems="center">
-                      <Box ml={5}>
+                      <img
+                        alt="Product"
+                        className={classes.image}
+                        src={product.image}
+                      />
+                      <Box ml={2}>
                         <Typography variant="h6" color="textPrimary">
-                          {product.partNumber} - {product.partName}
+                          {product.name}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
                           <span className={classes.subscriptions}>
-                            {product.supplierName}
-                          </span>
+                            {numeral(product.subscriptions).format('0,0')}
+                          </span>{' '}
+                          Active
                         </Typography>
                       </Box>
                     </Box>
                   </TableCell>
                   <TableCell>
                     <Typography variant="h6" color="textPrimary">
-                      Sold items #
+                      Price
                     </Typography>
                     <Typography noWrap variant="body2" color="textSecondary">
-                      <span className={classes.value}>{product.COUNT}</span>
+                      <span className={classes.value}>
+                        {numeral(product.price).format(
+                          `${product.currency}0,0.00`,
+                        )}
+                      </span>{' '}
+                      monthly
                     </Typography>
                   </TableCell>
-                  {/* <TableCell>
+                  <TableCell>
                     <Box
                       display="flex"
                       alignItems="center"
@@ -180,14 +175,14 @@ function MostProfitableProducts({ className, ...rest }) {
                       </Box>
                       <CircularProgress value={product.conversionRate} />
                     </Box>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </Box>
       </PerfectScrollbar>
-      {/* <Box p={2} display="flex" justifyContent="flex-end">
+      <Box p={2} display="flex" justifyContent="flex-end">
         <Button
           component={Link}
           size="small"
@@ -195,7 +190,7 @@ function MostProfitableProducts({ className, ...rest }) {
           endIcon={<NavigateNextIcon />}>
           See all
         </Button>
-      </Box> */}
+      </Box>
     </Card>
   );
 }

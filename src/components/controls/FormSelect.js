@@ -22,6 +22,7 @@ function FormSelect({
   label = '',
   options,
   setValue,
+  setSelected,
   errorObj = {},
   ...props
 }) {
@@ -42,9 +43,10 @@ function FormSelect({
         {...inputProps}
         ref={ref}
         {...props}
-        onChange={(e) =>
-          setValue('filter', { id: e.target.value, label: e.target.name })
-        }>
+        onChange={(e) => {
+          setValue('filter', { id: e.target.value, label: e.target.name });
+          setSelected({ value: e.target.value });
+        }}>
         {options.map((item) => (
           <MenuItem key={item.id} value={item.id}>
             {item.label}
