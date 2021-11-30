@@ -65,7 +65,7 @@ function LatestOrders({ className, ...rest }) {
   console.log(poqs);
   return (
     <Card className={clsx(classes.root, className)} {...rest}>
-      <CardHeader action={<GenericMoreButton />} title="Latest Orders" />
+      <CardHeader action={<GenericMoreButton />} title="Latest Quotations" />
       <Divider />
       <PerfectScrollbar>
         <Box minWidth={700}>
