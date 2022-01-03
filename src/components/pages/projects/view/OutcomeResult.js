@@ -86,6 +86,7 @@ function OutcomeResult({
                   <TableCell>Serial</TableCell>
                   <TableCell>Date</TableCell>
                   <TableCell>Amount </TableCell>
+                  <TableCell>Description </TableCell>
                 </TableRow>
               </TableHead>
               {isTableLoading ? (
@@ -100,6 +101,7 @@ function OutcomeResult({
                         <TableCell>{item.id}</TableCell>
                         <TableCell>{item.date}</TableCell>
                         <TableCell>{item.amount}</TableCell>
+                        <TableCell>{item.description}</TableCell>
                       </TableRow>
                     );
                   })}

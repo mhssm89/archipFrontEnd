@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
   },
   tableHeader: {
-    backgroundColor: '#e3e3e3',
+    backgroundColor: '#d1ebb6',
   },
   tableSubheader: {
     backgroundColor: '#e3e3e3',
@@ -144,6 +144,59 @@ const PrintQutation = (props) => {
   return boq ? (
     <Document>
       <Page size="A4" style={styles.page}>
+        <View>
+          <Image source="/static/images/boq/1.jpg" />
+        </View>
+        <View>
+          <View style={styles.Summerytable}>
+            <View style={[styles.tableHeader, { backgroundColor: '#f5f5f5' }]}>
+              <View style={styles.tableRow}>
+                <View style={styles.tableCell1}>
+                  <Text
+                    style={[
+                      styles.h6,
+                      { textAlign: 'center', marginLeft: '210rem' },
+                    ]}>
+                    Arch-ip offer for
+                    <Text style={{ color: '#1e87c8' }}>
+                      {'\n'}
+                      {boq.poq.customer['firstName']}{' '}
+                      {boq.poq.customer['lastName']}
+                    </Text>
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+        <View>
+          <Image source="/static/images/boq/17.jpg" />
+        </View>
+        <View>
+          <Image source="/static/images/boq/16.jpg" />
+        </View>
+      </Page>
+      <Page size="A4" style={styles.page}>
+        <View>
+          <Image source="/static/images/boq/2.jpg" />
+        </View>
+      </Page>
+
+      <Page size="A4" style={styles.page}>
+        <View>
+          <Image source="/static/images/boq/6.jpg" />
+        </View>
+      </Page>
+      <Page size="A4" style={styles.page}>
+        <View>
+          <Image source="/static/images/boq/7.jpg" />
+        </View>
+      </Page>
+
+      <Page size="A4" style={styles.page}>
+        <View>
+          <Text style={[styles.body2, { marginBottom: 15 }]}>{''}</Text>
+        </View>
         <View style={styles.header}>
           <View>
             <Image
@@ -275,71 +328,69 @@ const PrintQutation = (props) => {
 
             {/* //////////////////////////////////////////////////// */}
             <View style={[styles.tableRow, { backgroundColor: '#e3e3e3' }]}>
-              <View style={styles.tableCell1} />
-              <View style={styles.tableCellN}>
+              <View style={styles.tableCell1}>
                 <Text style={styles.subtitle2}>Prices</Text>
               </View>
             </View>
             {/* //////////////////////////////////////////////////// */}
             <View style={styles.tableRow}>
-              <View style={styles.tableCell1} />
-              <View style={styles.tableCellN}>
+              <View style={styles.tableCell1}>
                 <Text style={styles.body1}>Products Cost</Text>
               </View>
               <View style={styles.tableCellN}>
-                <Text style={[styles.body1, styles.alignRight]}>
+                <Text style={[styles.body1]}>
                   {boq.poq.productTotalcost}
+                  {' EGP'}
                 </Text>
               </View>
             </View>
             {/* //////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////// */}
             <View style={styles.tableRow}>
-              <View style={styles.tableCell1} />
-              <View style={styles.tableCellN}>
+              <View style={styles.tableCell1}>
                 <Text style={styles.body1}>Design and Installation</Text>
               </View>
               <View style={styles.tableCellN}>
-                <Text style={[styles.body1, styles.alignRight]}>
+                <Text style={[styles.body1]}>
                   {boq.poq.otherCost}
+                  {' EGP'}
                 </Text>
               </View>
             </View>
             {/* //////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////// */}
             <View style={styles.tableRow}>
-              <View style={styles.tableCell1} />
-              <View style={styles.tableCellN}>
+              <View style={styles.tableCell1}>
                 <Text style={styles.body1}>Shipping Cost</Text>
               </View>
               <View style={styles.tableCellN}>
-                <Text style={[styles.body1, styles.alignRight]}>
+                <Text style={[styles.body1]}>
                   {boq.poq.shippingCost}
+                  {' EGP'}
                 </Text>
               </View>
             </View>
             {/* //////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////// */}
             <View style={styles.tableRow}>
-              <View style={styles.tableCell1} />
-              <View style={styles.tableCellN}>
+              <View style={styles.tableCell1}>
                 <Text style={styles.body1}>Sub total</Text>
               </View>
               <View style={styles.tableCellN}>
-                <Text style={[styles.body1, styles.alignRight]}>
+                <Text style={[styles.body1]}>
                   {boq.poq.subtotal}
+                  {' EGP'}
                 </Text>
               </View>
             </View>
             {/* //////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////// */}
             <View style={styles.tableRow}>
-              <View style={styles.tableCell1} />
-              <View style={styles.tableCellN}>
+              <View style={styles.tableCell1}>
                 <Text style={styles.body1}>Taxes</Text>
               </View>
               <View style={styles.tableCellN}>
-                <Text style={[styles.body1, styles.alignRight]}>
+                <Text style={[styles.body1]}>
                   {boq.poq.vat}
                   {' %'}
                 </Text>
@@ -348,13 +399,13 @@ const PrintQutation = (props) => {
             {/* //////////////////////////////////////////////////// */}
             {/* //////////////////////////////////////////////////// */}
             <View style={[styles.tableRow, { backgroundColor: '#e3e3e3' }]}>
-              <View style={styles.tableCell1} />
-              <View style={styles.tableCellN}>
+              <View style={styles.tableCell1}>
                 <Text style={styles.body1}>Grand Total</Text>
               </View>
               <View style={styles.tableCellN}>
-                <Text style={[styles.body1, styles.alignRight]}>
+                <Text style={[styles.body1]}>
                   {boq.poq.grandTotal}
+                  {' EGP'}
                 </Text>
               </View>
             </View>
@@ -451,12 +502,7 @@ const PrintQutation = (props) => {
         {/* ///////////////////////////////////////////////////////////////////// */}
         {/* Fotter */}
         <View style={styles.company}>
-          <View>
-            <Text style={styles.body2}>
-              Please note that all prices in this qotation is valid till
-              {' ' + boq.poq.endDate} , then this qotation considered canceled
-            </Text>
-          </View>
+          <View></View>
         </View>
         <View style={styles.company}>
           <View>
@@ -540,7 +586,22 @@ const PrintQutation = (props) => {
             </View>
           </View>
         </View>
+        <View style={styles.company}>
+          <View>
+            <Text style={styles.body2}>
+              Please note that all prices in this qotation is valid till
+              {' ' + boq.poq.endDate} , then this qotation considered canceled
+            </Text>
+          </View>
+        </View>
         {/* /////////////////////////////////////////////////////////// */}
+      </Page>
+      <Page size="A4" style={styles.page}>
+        <View>
+          <Image source="/static/images/boq/13.jpg" />
+          <Image source="/static/images/boq/14.jpg" />
+          <Image source="/static/images/boq/15.jpg" />
+        </View>
       </Page>
     </Document>
   ) : (
