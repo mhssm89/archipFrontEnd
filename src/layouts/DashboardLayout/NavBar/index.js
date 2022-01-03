@@ -171,29 +171,6 @@ const sections = [
         icon: logisticIcon,
         href: '/sgas',
       },
-
-      {
-        title: 'Reports',
-        icon: FolderIcon,
-        href: '/orders',
-        items: [
-          {
-            title: 'Customers',
-            href: '/customer-report',
-            icon: ReceiptIcon,
-          },
-          {
-            title: 'Projects',
-            href: '/orders-report',
-            icon: ReceiptIcon,
-          },
-          {
-            title: 'Qutaions',
-            href: '/Quations-report',
-            icon: ReceiptIcon,
-          },
-        ],
-      },
     ],
   },
 ];
